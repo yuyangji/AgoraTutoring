@@ -3,29 +3,24 @@ import { MyTheme, globalStaticStyles } from "../../../../useGlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const students = [
-    { studentName: "Ruth Williams", joinedDate: "Joined 10th July 2023" },
-    { studentName: "John Doe", joinedDate: "Joined 5th July 2023" },
-    // Add more students here...
-  ];
-
 interface StudentListItemProps {
-    studentName: string;
-    joinedDate: string;
+  firstName: string;
+  lastName: string;
+  joinDate: Date;
   }
   
-  const StudentListItem = ({ studentName, joinedDate }: StudentListItemProps) => {
+  const StudentListItem = ({ firstName, lastName,  joinDate }: StudentListItemProps) => {
     return (
       <View style={styles.studentItemContainer}>
         <Text style={{ ...styles.studentName, fontWeight: "500" }}>
-          {studentName}
+          {firstName} {lastName}
         </Text>
-        <Text style={{ fontWeight: "300" }}>{joinedDate}</Text>
+        <Text style={{ fontWeight: "300" }}>{joinDate.toISOString()}</Text>
       </View>
     );
   };
 
-const People = ({ tutors }: { tutors: string[] }) => {
+const People = ({ tutors, students }: { tutors: string[], students:StudentListItemProps[] }) => {
     return (
       <View style={styles.peopleContainer}>
         <View style={styles.section}>
@@ -53,8 +48,9 @@ const People = ({ tutors }: { tutors: string[] }) => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <StudentListItem
-                studentName={item.studentName}
-                joinedDate={item.joinedDate}
+                firstName={item.firstName}
+                lastName={item.lastName}
+                joinDate={item.joinDate}
               />
             )}
           />

@@ -8,9 +8,9 @@ import { FirestoreResult } from './Types';
 export const sendEnrolmentRequest = async (programID: string, user:User) :Promise<FirestoreResult<string>> => {
 
   try {
-    const enrolmentRequestData : Omit<EnrolmentRequest,'requestID'>= {
-      programID: programID,
-      studentID: `${user.id}`,
+    const enrolmentRequestData : Omit<EnrolmentRequest,'requestId'>= {
+      programId: programID,
+      studentId: `${user.id}`,
       studentName: `${user.firstName} ${user.lastName}`,
       studentEmail: `${user.email}`
     }  

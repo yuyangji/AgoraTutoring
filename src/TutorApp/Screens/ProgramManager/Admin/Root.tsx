@@ -9,11 +9,24 @@ import Requests from "./RequestsView";
 import { getEnrolmentRequests } from "../../../../Firebase/Firebase";
 import { useAppSelector } from "../../../../Redux/hooks";
 import { selectUser } from "../../../../Redux/userSlice";
-import { EnrolmentRequest } from "../../../../Types/ModelTypes";
+import {
+  Enrolment,
+  EnrolmentRequest,
+  Student,
+} from "../../../../Types/ModelTypes";
+import { getStudentsFromProgram } from "../../../../Firebase/EnrolmentApi";
+import { ConvertDate } from "../../../../Utils";
 
 const Listing = () => {
   return <View></View>;
 };
+
+type StudentType = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  joinDate: Date
+}
 
 const Admin = ({ route, navigation }: AdminViewProp) => {
   const options = ["Enrolled", "Offering", "Requests"];
@@ -21,18 +34,33 @@ const Admin = ({ route, navigation }: AdminViewProp) => {
   const [selected, setSelected] = useState(options[0]);
   const [requests, setRequests] = useState<EnrolmentRequest[]>([]);
 
+  const [students, setStudents] = useState<StudentType[]>([]);
+
   const { program } = route.params;
   const user = useAppSelector(selectUser);
 
   useEffect(() => {
     if (user.id == program.admin) {
-      getEnrolmentRequests(program.programID).then((result) => {
-        if (result.success) {
+      getEnrolmentRequests(program.programId).then((result) => {
+        if (result.requests) {
           setRequests(result.requests);
         }
       });
     }
-  },[]);
+
+    getStudentsFromProgram(program.programId).then((result) => {
+      if (result.enrolments) {
+        const students = result.enrolments.map((i) => ({
+          id: i.studentId,
+          firstName: i.firstName,
+          lastName: i.lastName,
+          joinDate: i.joinDate.toDate()
+        }));
+
+        setStudents(students);
+      }
+    });
+  }, []);
 
   return (
     <View style={styles.viewContainer}>
@@ -59,7 +87,7 @@ const Admin = ({ route, navigation }: AdminViewProp) => {
         />
       </View>
       {selected == "Enrolled" ? (
-        <People tutors={program.tutors} />
+        <People tutors={program.tutors} students={students} />
       ) : selected == "Offering" ? (
         <Listing />
       ) : (

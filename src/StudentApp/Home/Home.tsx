@@ -18,7 +18,8 @@ import AnnouncementCard from "../../Components/AnnouncementCard";
 import useGlobalStyles, { MyTheme } from "../../useGlobalStyles";
 import { useAppSelector } from "../../Redux/hooks";
 import { selectUser } from "../../Redux/userSlice";
-
+import {useEffect} from 'react'
+import { AcceptEnrolmentRequest } from "../../Firebase/EnrolmentApi";
 
 const ClassCard = ({title, content, destination, time }) => {
 
@@ -43,6 +44,18 @@ const Home = () => {
     const globalStyles = useGlobalStyles()
     const user = useAppSelector((state) => state.user.user)
 
+    useEffect(() => {
+        const  accept = async() => {
+            const input = {
+                requestId:"",
+                programId: "",
+                studentId: ""
+            }
+               AcceptEnrolmentRequest(input)
+        }
+        accept()
+      })
+       
     return (
         <View>
             <View style = {{...styles.headerContainer, backgroundColor:MyTheme.colors.primary}}>

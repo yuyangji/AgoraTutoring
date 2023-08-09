@@ -3,7 +3,10 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { Program, User } from "../Types/ModelTypes";
 import { RootState } from "./store";
 import { FirestoreResult } from "../Firebase/Types";
-import {sendEnrolmentRequest} from '../Firebase/FirebaseStudent'
+import { sendEnrolmentRequest } from '../Firebase/FirebaseStudent'
+import functions from '@react-native-firebase/functions'
+
+
 interface ProgramState {
   enrolledPrograms: Program[];
   pendingPrograms: string[];

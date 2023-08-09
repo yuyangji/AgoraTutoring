@@ -70,7 +70,7 @@ const CourseCard = ({ props }: { props: CourseCardProps }) => {
           </Text>
           <TouchableOpacity
             style={styles.enrolButton}
-            onPress={() => props.onPressEnrol(props.programID)}
+            onPress={() => props.onPressEnrol(props.programId)}
             disabled={props.isEnrolled}
           >
             <Text

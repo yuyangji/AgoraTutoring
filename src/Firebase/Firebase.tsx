@@ -6,11 +6,11 @@ import { FirestoreResult } from './Types';
 export const getEnrolmentRequests = async (programID:string) => {
   try {
     const querySnapshot = await firestore().collection('EnrolmentRequests').where('programID', '==', programID).get();
-    const requests = querySnapshot.docs.map(doc => ({ requestID: doc.id, ...doc.data() } as EnrolmentRequest));
-    return { success: true, requests };
+    const requests = querySnapshot.docs.map(doc => ({ requestId: doc.id, ...doc.data() } as EnrolmentRequest));
+    return { requests };
   } catch (error) {
     console.error('Error retrieving enrollment requests:', error);
-    return { success: false, error };
+    return { error };
   }
 };
 
@@ -23,12 +23,12 @@ export const approveEnrolmentRequest = async (request: EnrolmentRequest) => {
   // Add to Enrolment collection
   const enrolmentRef = db.collection('Enrolments').doc();
   batch.set(enrolmentRef, {
-    studentID: request.studentID,
-    courseID: request.programID,
+    studentID: request.studentId,
+    courseID: request.programId,
   });
 
   // Delete from EnrolmentRequest collection
-  const requestRef = db.collection('EnrolmentRequests').doc(request.requestID);
+  const requestRef = db.collection('EnrolmentRequests').doc(request.requestId);
   batch.delete(requestRef);
 
   try {
@@ -55,7 +55,7 @@ export const rejectEnrolmentRequest = async (requestID: string) => {
 export const getStudentEnrolmentRequests = async (studentID:string) : Promise<FirestoreResult<EnrolmentRequest[]>> => {
   try {
     const querySnapshot = await firestore().collection('EnrolmentRequests').where('studentID', '==', studentID).get();
-    const requests = querySnapshot.docs.map(doc => ({ requestID: doc.id, ...doc.data() } as EnrolmentRequest));
+    const requests = querySnapshot.docs.map(doc => ({ requestId: doc.id, ...doc.data() } as EnrolmentRequest));
     return { success: true, data:requests };
   } catch (error) {
     console.error('Error retrieving enrollment requests:', error);
@@ -129,8 +129,9 @@ export const getAllPrograms = async (): Promise<FirestoreResult<ProgramLocal[]>>
     const querySnapshot = await firestore().collection('Programs').get();
     const programs: ProgramLocal[] = querySnapshot.docs.map(doc => {
       const data = doc.data();
+      const {start,end, ...remaining} = data
       return {
-        programID: doc.id, // Include the document ID
+        programId: doc.id, // Include the document ID
         admin: data.admin,
         title: data.title,
         tutors: data.tutors,

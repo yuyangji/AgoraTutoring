@@ -1,3 +1,5 @@
+import {FirebaseFirestoreTypes } from '@react-native-firebase/firestore'
+
 export interface User {
   id: string;
   firstName: string;
@@ -8,8 +10,22 @@ export interface User {
   avatarUrl?: string;
 }
 
+export interface Student {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface Enrolment{
+  enrolmentId: string; //Doc id
+  programId: string;
+  studentId: string;
+  firstName: string;
+  lastName: string;
+  joinDate: FirebaseFirestoreTypes.Timestamp
+}
 export interface Program {
-  programID: string;
+  programId: string;
   admin: string;
   title: string;
   tutors: string[];
@@ -19,10 +35,32 @@ export interface Program {
   products: string[];
 }
 
+export interface ProgramFirestore extends Program{
+  start: FirebaseFirestoreTypes.Timestamp
+  end: FirebaseFirestoreTypes.Timestamp
+}
+
 export interface ProgramLocal extends Program{
   start: Date;
   end: Date;
 }
+
+function convertToProgramLocal(programFirestore: ProgramFirestore): ProgramLocal {
+  return {
+    ...programFirestore,
+    start: programFirestore.start.toDate(),
+    end: programFirestore.end.toDate(),
+  };
+}
+
+function convertToProgramFirestore(programLocal: ProgramLocal): ProgramFirestore {
+  return {
+    ...programLocal,
+    start: FirebaseFirestoreTypes.Timestamp.fromDate(programLocal.start),
+    end: FirebaseFirestoreTypes.Timestamp.fromDate(programLocal.end),
+  };
+}
+
 
 export interface Lesson{
   documentID: string;
@@ -45,11 +83,7 @@ export interface Attendance{
   studentID: string;
 }
 
-export interface Enrolment{
-  enrolmentId: string;
-  studentId: string;
-  programId: string;
-}
+
 
 
 export interface Message {
@@ -60,9 +94,9 @@ export interface Message {
 }
 
 export interface EnrolmentRequest {
-  requestID: string;
-  programID: string;
-  studentID: string;
+  requestId: string;
+  programId: string;
+  studentId: string;
   studentName: string;
   studentEmail: string;
 }

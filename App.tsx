@@ -9,6 +9,7 @@ import useAuth from "./src/hooks/useAuth";
 import { Provider } from "react-redux";
 import { store } from "./src/Redux/store";
 import TutorStack from "./src/TutorApp/Navigators/TutorNavigator";
+import { useEffect } from "react";
 
 
 const SkipAuth = false;
@@ -27,6 +28,7 @@ const MainApp = () => {
  function App() {
 
   const { user, isLoading } = useAuth();
+
 
   if (SkipAuth)
   return <StudentStack />

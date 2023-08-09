@@ -78,7 +78,7 @@ const ProgramSearch = () => {
               ...item,
               onPressEnrol: onPressEnrol,
               isEnrolled:
-                myPrograms.findIndex((programID) => programID == item.programID) !=
+                myPrograms.findIndex((programID) => programID == item.programId) !=
                 -1,
             }}
           />

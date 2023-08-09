@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Assessments from "../../StudentApp/Assessments/Assessments";
 import { MyTheme } from "../../useGlobalStyles";
-import Admin from "../Screens/ProgramManager/Admin/Admin";
+import Admin from "../Screens/ProgramManager/Admin/Root";
 import AssessmentsView from "../Screens/ProgramManager/AssessmentsView";
 import GroupListView from "../Screens/ProgramManager/GroupListView";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
