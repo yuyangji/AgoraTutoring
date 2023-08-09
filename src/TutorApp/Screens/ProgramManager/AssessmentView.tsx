@@ -7,7 +7,7 @@ import {
   FlatList,
 } from "react-native";
 import { useState } from "react";
-import { MyTheme, globalStaticStyles } from "../../useGlobalStyles";
+import { MyTheme, globalStaticStyles } from "../../../useGlobalStyles";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";

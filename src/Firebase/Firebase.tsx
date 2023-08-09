@@ -1,67 +1,11 @@
 import firestore from '@react-native-firebase/firestore';
-import { Attendance, Course, Enrolment, EnrolmentRequest, User } from '../Types/Types';
-import auth from '@react-native-firebase/auth'
-
-//Get the user's details by id stored in firestore
-export const getUserById = async (uid: string) : Promise<{data?:User, error:any}>=> {
-  try {
-    const userDocRef = firestore().collection('Users').doc(uid);
-    const userDoc = await userDocRef.get();
-
-    if (userDoc.exists) {
-      return { data:{id:uid, ...userDoc.data() as Omit<User, 'id'> }, error: null };
-    } else {
-      return {  error: 'No such user!' };
-    }
-  } catch (error) {
-    console.log('Error getting user:', error);
-    return {  error: error.message };
-  }
-};
-
-export const createUserWithEmailAndPassword = async (
-  email: string,
-  password: string,
-  user: Omit<User, 'id'>
-) => {
-  try {
-    // Create the user with email and password
-    const authResult = await auth().createUserWithEmailAndPassword(email, password);
-
-    // Get the user ID from the authentication result
-    const uid = authResult.user.uid;
-
-    // Create the user document in Firestore
-   
-    await  createUser({
-      ...user,
-      id: uid,
-    });
-
-    const currentUser = await getUserById(uid)
-
-    return currentUser
-  } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
-  }
-};
-
-
-export const createUser = async (user: User) => {
-  try {
-    await firestore().collection('Users').doc(user.id).set(user);
-    console.log('User created successfully');
-  } catch (error) {
-    console.error('Error creating user:', error);
-  }
-}
-
+import { Attendance,  Enrolment, EnrolmentRequest, Program, ProgramLocal, User } from '../Types/ModelTypes';
+import { FirestoreResult } from './Types';
 
 //Get enrolment requests for a tutor
-export const getEnrolmentRequests = async () => {
+export const getEnrolmentRequests = async (programID:string) => {
   try {
-    const querySnapshot = await firestore().collection('EnrolmentRequests').get();
+    const querySnapshot = await firestore().collection('EnrolmentRequests').where('programID', '==', programID).get();
     const requests = querySnapshot.docs.map(doc => ({ requestID: doc.id, ...doc.data() } as EnrolmentRequest));
     return { success: true, requests };
   } catch (error) {
@@ -80,7 +24,7 @@ export const approveEnrolmentRequest = async (request: EnrolmentRequest) => {
   const enrolmentRef = db.collection('Enrolments').doc();
   batch.set(enrolmentRef, {
     studentID: request.studentID,
-    courseID: request.courseID,
+    courseID: request.programID,
   });
 
   // Delete from EnrolmentRequest collection
@@ -107,7 +51,17 @@ export const rejectEnrolmentRequest = async (requestID: string) => {
   }
 };
 
-
+//Get enrolment requests for a tutor
+export const getStudentEnrolmentRequests = async (studentID:string) : Promise<FirestoreResult<EnrolmentRequest[]>> => {
+  try {
+    const querySnapshot = await firestore().collection('EnrolmentRequests').where('studentID', '==', studentID).get();
+    const requests = querySnapshot.docs.map(doc => ({ requestID: doc.id, ...doc.data() } as EnrolmentRequest));
+    return { success: true, data:requests };
+  } catch (error) {
+    console.error('Error retrieving enrollment requests:', error);
+    return { success: false, error };
+  }
+};
 //Retrieve previous attendances for a lesson
 export const getAttendanceHistory = async (studentID: string, courseID?: string) => {
   try {
@@ -128,16 +82,22 @@ export const getAttendanceHistory = async (studentID: string, courseID?: string)
 };
 
 //Get courses the student is enrolled in
-export const getEnrolledCourses = async (studentID: string) => {
+export const getEnrolledPrograms = async (studentID: string) => {
   try {
     const querySnapshot = await firestore().collection('Enrolments').where('studentID', '==', studentID).get();
     const enrolments = querySnapshot.docs.map(doc => doc.data() as Enrolment);
 
-    // Optionally, you could also retrieve the full course details here
+    // Retrieve the full course details
     const courses = await Promise.all(enrolments.map(enrolment => 
-      firestore().collection('Courses').doc(enrolment.courseID).get()
+      firestore().collection('Courses').doc(enrolment.programId).get()
     ));
-    const courseDetails = courses.map(courseDoc => courseDoc.data() as Course);
+    const courseDetails = courses.map(courseDoc => {
+      const data = courseDoc.data() as Program;
+      return {
+        ...data,
+        documentID: courseDoc.id // Include the document ID
+      };
+    });
 
     return { success: true, courses: courseDetails };
   } catch (error) {
@@ -145,6 +105,65 @@ export const getEnrolledCourses = async (studentID: string) => {
     return { success: false, error };
   }
 };
+
+export const getUsersNames = async (tutorIds: string[]): Promise<FirestoreResult<string[]>> => {
+  try {
+    // Retrieve the user documents for the given tutor IDs
+    const userDocs = await Promise.all(tutorIds.map(id => firestore().collection('Users').doc(id).get()));
+
+    // Extract the first and last names from the user documents
+    const tutorNames = userDocs.map(doc => {
+      const user = doc.data() as User;
+      return `${user.firstName} ${user.lastName}`;
+    });
+
+    return { success: true, data: tutorNames };
+  } catch (error) {
+    console.error('Error retrieving tutor names:', error);
+    return { success: false, error };
+  }
+};
+
+export const getAllPrograms = async (): Promise<FirestoreResult<ProgramLocal[]>> => {
+  try {
+    const querySnapshot = await firestore().collection('Programs').get();
+    const programs: ProgramLocal[] = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        programID: doc.id, // Include the document ID
+        admin: data.admin,
+        title: data.title,
+        tutors: data.tutors,
+        price: data.price,
+        rate: data.rate,
+        subtitle: data.subtitle,
+        products: data.products,
+        start: data.start?.toDate(), // Convert to JavaScript Date object
+        end: data.end?.toDate() // Convert to JavaScript Date object
+      };
+    });
+
+    return { success: true, data: programs };
+  } catch (error) {
+    console.error('Error retrieving all programs:', error);
+    return { success: false, error };
+  }
+};
+
+export const getProgramsWithTutorNames = async (programs: Program[]): Promise<Program[]> => {
+  const updatedPrograms = await Promise.all(programs.map(async program => {
+    const response = await getUsersNames(program.tutors);
+    if (response.success) {
+      return { ...program, tutors: response.data };
+    } else {
+      return program; // Keep the original tutor IDs if fetching names fails
+    }
+  }));
+
+  return updatedPrograms;
+};
+
+
 
 
 //Allows tutors to create an assessment

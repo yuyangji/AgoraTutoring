@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import SearchField from "../../Components/SearchBar";
+import SearchField from "../../../Components/SearchBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../../useGlobalStyles";
 import AssessmentView from "./AssessmentView";
 
 interface AssessmentItemProps {

@@ -4,26 +4,13 @@ import useGlobalStyles, { MyTheme } from "../../useGlobalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from '@expo/vector-icons';
 import { Submission } from "./SubmissionsView";
+import SubmitBoxButton from "../../Components/SubmitBoxButton";
 interface SubmitScreenProps {
     submissionId: String;
     title: String;
     instructions: String;
 
 }
-
-const SubmitBoxButton = () => {
-
-    return (
-        <Pressable>
-
-            <View style={styles.submitBoxContainer}>
-                <FontAwesome name="upload" size={30} color="#585858" />
-                <Text>Tap to upload</Text>
-            </View>
-        </Pressable>
-    )
-}
-
 
 const Submit = (props: Submission) => {
 
@@ -90,14 +77,5 @@ const styles = StyleSheet.create({
     instructionsText: {
         fontWeight: '300'
     },
-
-    submitBoxContainer: {
-        borderWidth: 0.5,
-        borderRadius: 10,
-        height: 145,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10
-    }
 
 })

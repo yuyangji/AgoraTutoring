@@ -10,8 +10,8 @@ import Assessments from "../../StudentApp/Assessments/Assessments";
 import Submit from "../../StudentApp/Assessments/Submit";
 import { FontAwesome5 } from "@expo/vector-icons";
 import GroupChat from "../../Common/GroupChat/GroupChat";
-import YourStudents from "../YourStudents/YourStudents";
-import BrowseCourses from "../../StudentApp/BrowseCourses/CourseList";
+import YourStudents from "../Screens/YourStudents";
+import ProgramSearch from "../../StudentApp/ProgramSearch/ProgramSearch";
 import { MyTheme } from "../../useGlobalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BottomTabBar from "../../Navigation/BottomTabBar";
@@ -19,7 +19,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import HeaderMenu from "../../Navigation/HeaderMenu";
 import { useAppDispatch } from "../../Redux/hooks";
 import { logout } from "../../Redux/userSlice";
-import MySubjects from "../MySubjects/MySubjects";
+import MySubjects from "../Screens/MySubjects";
 
 const BottomTab = createBottomTabNavigator();
 

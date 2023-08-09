@@ -51,7 +51,7 @@ const Home = () => {
                 </Text>
                 <Text style={styles.enrolmentStatus}>
                     {user.userType == 'Tutor' ? 'Tutor' :
-                    user.linkedCourseIDs ? "Enrolled" : "Unenrolled"
+                    user.programs ? "Enrolled" : "Unenrolled"
                     }
                 </Text>
 

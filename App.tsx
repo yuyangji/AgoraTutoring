@@ -1,4 +1,5 @@
-import React from "react";
+import { configureFirebaseEmulators } from "./src/Firebase/FirebaseEmulators";
+
 
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { View, Text } from 'react-native'
@@ -7,20 +8,19 @@ import StudentStack from "./src/Navigation/StudentNavigator";
 import useAuth from "./src/hooks/useAuth";
 import { Provider } from "react-redux";
 import { store } from "./src/Redux/store";
-import TutorStack from "./src/Navigation/TutorNavigator";
+import TutorStack from "./src/TutorApp/Navigators/TutorNavigator";
+
 
 const SkipAuth = false;
 
+configureFirebaseEmulators()
+
 const MainApp = () => {
-
-
-
   return (
     <Provider store = {store}>
     <App/>
   </Provider>
   )
-
 }
 
 
@@ -35,7 +35,7 @@ const MainApp = () => {
 
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'black' }}>
-        <Text style = {{color:'black'}}> Agora... </Text>
+        <Text style = {{color:'white'}}> Agora... </Text>
       </View>)
    }
    

@@ -11,7 +11,9 @@ export const MyTheme = {
     textPrimary: '#0C437A',
     backgroundDark: '#0A2342',
     surfaceDark: '#0C3260',
-    secondary: '#F99849'
+    secondary: '#F99849',
+    emergency: '#ED4E4E',
+    success:'#29B136'
   },
 
 }

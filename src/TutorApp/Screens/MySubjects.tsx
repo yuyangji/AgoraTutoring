@@ -7,26 +7,39 @@ import {
 } from "react-native";
 import SearchField from "../../Components/SearchBar";
 import { MyTheme, globalStaticStyles } from "../../useGlobalStyles";
-import SubjectCard, { SubjectCardProps } from "./SubjectCard";
+import SubjectCard, { SubjectCardProps } from "../MySubjects/SubjectCard";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useEffect, useState } from "react";
+import { Program } from "../../Types/ModelTypes";
+import { getAllPrograms, getProgramsWithTutorNames } from "../../Firebase/Firebase";
 
-const subjectsData: SubjectCardProps[] = [
-  {
-    subjectTitle: "Math Methods",
-    tutors: ["Harley Zhong"],
-    courseID: "",
-    nextLessonTime: "23-05-2023 10:00am",
-    submissionCount: "11 submissions for assessment 1",
-  },
-];
 
 const MySubjects = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const [programs, setPrograms] = useState<Program[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const onPressSubject = ({ courseID }) => {
-    navigation.push("Subject");
+  const onPressSubject = (program:Program) => {
+    navigation.push("ProgramNavigator",{...program});
   };
+
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      const response = await getAllPrograms();
+      setLoading(false);
+      if (response.success) {
+        const programsWithTutorNames = await getProgramsWithTutorNames(response.data);
+        setPrograms(programsWithTutorNames);
+      } else {
+        setError('Failed to fetch programs.');
+      }
+    };
+  
+
+    fetchPrograms();
+  }, []);
 
   return (
     <View style={globalStaticStyles.screen}>
@@ -36,13 +49,17 @@ const MySubjects = () => {
           <Text style={styles.addClassText}>+ Add Class</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={subjectsData}
+      {
+        !loading &&
+        <FlatList
+        data={programs}
         renderItem={({ item }) => (
           <SubjectCard onPress={() => onPressSubject(item)} data={item} />
         )}
         keyExtractor={(item, index) => index.toString()}
       />
+      }
+
     </View>
   );
 };

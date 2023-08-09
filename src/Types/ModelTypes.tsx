@@ -4,16 +4,24 @@ export interface User {
   lastName: string;
   email: string;
   userType: "Tutor" | "Student" | "Parent" | "Guest";
-  linkedCourseIDs: string[];
+  programs: string[];
   avatarUrl?: string;
 }
 
-export interface Course{
-  courseID: string;
-  tutorID: string;
-  courseTitle: string;
-  lessons?: Lesson[];
-  assessments?: Assessment[];
+export interface Program {
+  programID: string;
+  admin: string;
+  title: string;
+  tutors: string[];
+  price?: number;
+  rate?: string;
+  subtitle?: string;
+  products: string[];
+}
+
+export interface ProgramLocal extends Program{
+  start: Date;
+  end: Date;
 }
 
 export interface Lesson{
@@ -38,9 +46,9 @@ export interface Attendance{
 }
 
 export interface Enrolment{
-  documentID: string;
-  studentID: string;
-  courseID: string;
+  enrolmentId: string;
+  studentId: string;
+  programId: string;
 }
 
 
@@ -53,18 +61,9 @@ export interface Message {
 
 export interface EnrolmentRequest {
   requestID: string;
-  courseID: string;
+  programID: string;
   studentID: string;
+  studentName: string;
+  studentEmail: string;
 }
 
-export interface Program {
-  title: string;
-  tutors: string[];
-  price: number;
-  rate: string;
-  subtitle?: string;
-  products: string[];
-  start: string;
-  end: string;
-
-}

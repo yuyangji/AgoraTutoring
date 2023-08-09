@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StudentMainWithBottomTab } from '../StudentApp/Main/StudentMain';
+import { StudentAppNavigator } from '../StudentApp/Main/StudentApp';
 import { MyTheme } from '../useGlobalStyles';
 import Submit from '../StudentApp/Assessments/Submit';
 
@@ -24,7 +24,7 @@ export default function StudentStack() {
   return (
     <NavigationContainer theme = {MyTheme}>
       <Stack.Navigator screenOptions={screenOptions}>
-        <Stack.Screen name="Main" component={StudentMainWithBottomTab} />
+        <Stack.Screen name="Main" component={StudentAppNavigator} />
         <Stack.Screen name="Submit" component={Submit} options={{
           headerBackButtonMenuEnabled: true,
           headerTintColor:'white',

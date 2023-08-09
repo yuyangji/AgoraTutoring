@@ -10,8 +10,8 @@ import Assessments from "../Assessments/Assessments";
 import Submit from "../Assessments/Submit";
 import { FontAwesome5 } from '@expo/vector-icons';
 import GroupChat from "../../Common/GroupChat/GroupChat";
-import YourStudents from "../../TutorApp/YourStudents/YourStudents";
-import BrowseCourses from "../BrowseCourses/CourseList";
+import YourStudents from "../../TutorApp/Screens/YourStudents";
+import ProgramSearch from "../ProgramSearch/ProgramSearch";
 import { MyTheme } from "../../useGlobalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BottomTabBar from "../../Navigation/BottomTabBar";
@@ -32,7 +32,7 @@ const IconAssessments = (props: { color: string; size: number }) => <Ionicons na
 const EnrolmentIcon = (props: { color: string; size: number }) => <FontAwesome name="graduation-cap" size={props.size} color={props.color} />
 
 
-export const StudentMainWithBottomTab = () => {
+export const StudentAppNavigator = () => {
 
   return (
     <BottomTabNavigator>
@@ -48,7 +48,7 @@ export const StudentMainWithBottomTab = () => {
 
       <BottomTab.Screen
         name="Products"
-        component={BrowseCourses}
+        component={ProgramSearch}
         options={{
           tabBarIcon: EnrolmentIcon
         }}

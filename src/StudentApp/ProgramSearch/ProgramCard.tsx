@@ -1,18 +1,38 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { MyTheme } from "../../useGlobalStyles";
-import { Program } from "../../Types/Types";
+import { Program, ProgramLocal } from "../../Types/ModelTypes";
 import { Ionicons } from "@expo/vector-icons";
+import { ConvertDate } from "../../Utils";
 
-
-export interface CourseCardProps extends Program {
-    onPressEnrol: (programId: string) => void;
-    isEnrolled: boolean;
+export interface CourseCardProps extends Omit<ProgramLocal, "admin"> {
+  onPressEnrol: (programId: string) => void;
+  isEnrolled: boolean;
 }
 
-const CourseCard = ({ props }:{props:CourseCardProps}) => {
+// const EnrolButton = ({ onPress }: { onPress: () => void }) => {
+
+//   return (
+//     <TouchableOpacity
+//     style={styles.enrolButton}
+//               onPress={() => props.onPressEnrol}
+//     disabled = {props.isEnrolled}
+//   >
+//     <Text style={styles.buttonText}>{props.isEnrolled ? "Enrolled":"Enrol"}</Text>
+//   </TouchableOpacity>
+//   )
+// }
+
+const CourseCard = ({ props }: { props: CourseCardProps }) => {
   return (
-    <View style={styles.shadow}>
+    <View
+      style={{
+        ...styles.shadow,
+        borderRadius: 5,
+        overflow: "hidden",
+        marginBottom: 10,
+      }}
+    >
       <View style={styles.cardContainer}>
         <View style={styles.leftContainer}>
           <View style={{ flexDirection: "column", gap: 4 }}>
@@ -38,8 +58,10 @@ const CourseCard = ({ props }:{props:CourseCardProps}) => {
           </View>
 
           <View style={{ flexDirection: "row", gap: 15, marginVertical: 10 }}>
-            <Text style={styles.timeText}>Starts {props.start}</Text>
-            <Text style={styles.timeText}>Ends {props.end}</Text>
+            <Text style={styles.timeText}>
+              Starts {ConvertDate(props.start)}
+            </Text>
+            <Text style={styles.timeText}>Ends {ConvertDate(props.end)}</Text>
           </View>
         </View>
         <View style={styles.rightContainer}>
@@ -48,10 +70,17 @@ const CourseCard = ({ props }:{props:CourseCardProps}) => {
           </Text>
           <TouchableOpacity
             style={styles.enrolButton}
-                      onPress={() => props.onPressEnrol}
-            disabled = {props.isEnrolled}
+            onPress={() => props.onPressEnrol(props.programID)}
+            disabled={props.isEnrolled}
           >
-            <Text style={styles.buttonText}>{props.isEnrolled ? "Enrolled":"Enrol"}</Text>
+            <Text
+              style={[
+                styles.buttonText,
+                props.isEnrolled && { backgroundColor: MyTheme.colors.success },
+              ]}
+            >
+              {props.isEnrolled ? "Enrolled" : "Enrol"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -129,9 +158,12 @@ const styles = StyleSheet.create({
   enrolButton: {
     backgroundColor: "#0A2342",
     paddingVertical: 7,
-    paddingHorizontal: 26,
+    paddingHorizontal: 5,
     position: "absolute",
-    bottom: 0,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 60,
   },
   buttonText: {
     fontSize: 12,

@@ -1,13 +1,22 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MyTheme } from '../useGlobalStyles';
-import { TutorApp } from '../TutorApp/Main/TutorMain';
+import { MyTheme } from '../../useGlobalStyles';
+import { TutorApp } from './TutorApp';
 
-import SubjectManagerNavigator from '../TutorApp/SubjectManager/SubjectManagerNavigator';
-import GroupListView from '../TutorApp/SubjectManager/GroupListView';
-import LessonCalendar from '../TutorApp/SubjectManager/LessonCalendar';
+import ProgramNavigator from './ProgramNavigator';
+import GroupListView from '../Screens/ProgramManager/GroupListView';
+import LessonCalendar from '../Screens/LessonCalendar';
+import { Program } from '../../Types/ModelTypes';
 
-const Stack = createNativeStackNavigator()
+
+export type TutorRootStackParamList = {
+  Main: undefined;
+  ProgramNavigator: {program: Program};
+  LessonCalendar: undefined;
+}
+
+
+const Stack = createNativeStackNavigator<TutorRootStackParamList>()
 
 export default function TutorStack() {
 
@@ -19,15 +28,16 @@ export default function TutorStack() {
     <NavigationContainer theme = {MyTheme}>
       <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen name="Main" component={TutorApp} />
-        <Stack.Screen name="Subject" component={SubjectManagerNavigator}
-          options={{
+        <Stack.Screen name="ProgramNavigator" component={ProgramNavigator}
+          options={({route}) =>({
             headerShown: true,
             headerStyle: { backgroundColor: MyTheme.colors.primary },
             headerTitleStyle: { color: 'white', fontWeight: '400' },
+            headerTitle: route.params.program.title,
           headerTintColor : 'white'
-          }}
+          })}
         />
-        <Stack.Screen name="Lesson" component={LessonCalendar}
+        <Stack.Screen name="LessonCalendar" component={LessonCalendar}
           options={{
             headerShown: true,
             headerStyle: { backgroundColor: MyTheme.colors.primary },

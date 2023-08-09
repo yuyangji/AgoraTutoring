@@ -17,11 +17,9 @@ import db from '@react-native-firebase/firestore'
 import RoundTextField from "../../Components/RoundTextField";
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MyTheme } from "../../useGlobalStyles";
-import { User } from "../../Types/Types";
-import { createUser, createUserWithEmailAndPassword } from "../../Firebase/Firebase";
+import { User } from "../../Types/ModelTypes";
 import { useAppDispatch } from "../../Redux/hooks";
-import { login } from "../../Redux/userSlice";
-
+import { createUserEmailAndPassword } from "../../Redux/userSlice";
 
 const personIcon = <Ionicons name="person-outline" size={24} color={MyTheme.colors.primary} />
 const lockIcon = <MaterialIcons name="lock-outline" size={24}color={MyTheme.colors.primary}  />
@@ -46,22 +44,11 @@ export const Register = () => {
       firstName: firstName,
       lastName: lastName,
       userType: 'Student',
-      linkedCourseIDs: [],
+      programs: [],
     };
 
     if (email && password) {
-      //validate email and password
-
-      //Register user
-      try {
-        const response = await createUserWithEmailAndPassword(email, password, userData)
-        if(response.data)
-          dispatch(login(response.data))
-
-      } catch (e) {
-
-      }
-
+      dispatch(createUserEmailAndPassword({password, ...userData}))
     }
 
 

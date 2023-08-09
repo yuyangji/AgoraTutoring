@@ -1,26 +1,28 @@
 
 import { View, StyleSheet, TouchableOpacity, Text} from "react-native"
 import { MyTheme, globalStaticStyles } from "../../useGlobalStyles"
+import { ConvertDate } from "../../Utils";
 
 export interface SubjectCardProps {
-    subjectTitle: string;
+    title: string;
     tutors: string[];
-    courseID: string;
-    nextLessonTime: string;
-    submissionCount: string;
+    programID: string;
+    start: Date;
+    end: Date;
 }
 
-const SubjectCard = ({ data, onPress} : {data:SubjectCardProps, onPress: () => void}) => {
+const SubjectCard = ({ data, onPress }: { data: SubjectCardProps, onPress: () => void }) => {
+    
     return (
         <TouchableOpacity style={{...globalStaticStyles.boxShadow, borderRadius: 5}} onPress = {onPress}>
             <View style={styles.cardContainer}>
                 <View style={styles.leftContainer}>
                     <View style={{ flexDirection: 'column', gap: 4 }}>
-                        <Text style={styles.title}>{data.subjectTitle}</Text>
+                        <Text style={styles.title}>{data.title}</Text>
                         <Text style={styles.tutorsText}>{data.tutors[0]}</Text>
                     </View>
 
-                    <Text style={styles.nextLessonText}>Next lesson: {data.nextLessonTime}</Text>
+                    <Text style={styles.nextLessonText}>Next lesson: {ConvertDate(data.start)}</Text>
                 </View>
                 <View style={styles.rightContainer}>
                     <Text style={styles.topRightText}>
