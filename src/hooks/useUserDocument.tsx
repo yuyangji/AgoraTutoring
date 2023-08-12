@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { updateUser } from '../Redux/userSlice';
-import { User } from '../Types/ModelTypes';
+import { User } from '../Types/Users';
 
 export default function useUserDocument(uid: string) {
   const dispatch = useDispatch();

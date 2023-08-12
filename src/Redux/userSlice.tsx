@@ -1,13 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Program, User } from "../Types/ModelTypes";
+import { User } from "../Types/Users";
+import { Program } from "../Types/Program";
 import { RootState } from "./store";
 import {
   createUser,
   createUserAuth,
-  createUserWithEmailAndPassword,
   getUserById,
-} from "../Firebase/Authentication";
+} from "../Firebase/AuthenticationApi";
 import { FirestoreResult } from "../Firebase/Types";
 
 interface AppState {
@@ -69,9 +69,7 @@ export const userSlice = createSlice({
     updateUser: (state, action: PayloadAction<User>) => {
         state.user = action.payload;
       },
-    addProgram: (state, action: PayloadAction<Program>) => {
-      state.programs.push(action.payload);
-    },
+
   },
   extraReducers: (builder) => {
     builder
@@ -88,7 +86,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { logout, addProgram, updateUser } = userSlice.actions;
+export const { logout,  updateUser } = userSlice.actions;
 export const selectUser = (state: RootState) => state.user.user;
 export const selectPrograms = (state: RootState) => state.user.user.programs;
 export default userSlice.reducer;
