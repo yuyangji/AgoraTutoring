@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { User } from "../Types/Users";
-import { Program } from "../Types/Program";
-import { RootState } from "./store";
+import { User } from "../../Types/Users";
+import { Program } from "../../Types/Program";
+import { RootState } from "../store";
 import {
   createUser,
   createUserAuth,
   getUserById,
-} from "../Firebase/AuthenticationApi";
-import { FirestoreResult } from "../Firebase/Types";
+} from "../../Firebase/AuthenticationApi";
+import { FirestoreResult } from "../../Firebase/Types";
 
 interface AppState {
   user: User | null;
@@ -25,15 +25,15 @@ let initialState: AppState = {
 export const fetchUserById = createAsyncThunk<
   User,
   string,
-  { rejectValue: Error; state: RootState }
+  { rejectValue: {message: string}; state: RootState }
 >("users/fetchByIdStatus", async (userId, { rejectWithValue, getState }) => {
   if (getState().user.isNew) return;
-
-  const response: FirestoreResult<User> = await getUserById(userId);
-  if (response.success) {
-    return response.data;
+  try {
+    const response = await getUserById(userId);
+    return response;
+  } catch (e) {
+    return rejectWithValue({ message: e.toString() });
   }
-  if (response.success == false) return rejectWithValue(response.error);
 });
 
 export const createUserEmailAndPassword = createAsyncThunk<
@@ -67,9 +67,8 @@ export const userSlice = createSlice({
       state.user = null;
     },
     updateUser: (state, action: PayloadAction<User>) => {
-        state.user = action.payload;
-      },
-
+      state.user = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -86,7 +85,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { logout,  updateUser } = userSlice.actions;
+export const { logout, updateUser } = userSlice.actions;
 export const selectUser = (state: RootState) => state.user.user;
-export const selectPrograms = (state: RootState) => state.user.user.programs;
+export const selectProgramIds = (state: RootState) => state.user.user.programs;
 export default userSlice.reducer;

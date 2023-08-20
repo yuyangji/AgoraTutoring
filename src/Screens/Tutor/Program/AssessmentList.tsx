@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Pressable,
   Text,
@@ -11,6 +11,11 @@ import SearchField from "../../../Components/SearchBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { MyTheme } from "../../../useGlobalStyles";
 import AssessmentView from "./AssessmentView";
+import { useAppSelector } from "../../../Redux/hooks";
+import { selectAssessments } from "../../../Redux/slices/assessmentsSlice";
+import { Assessment } from "../../../Types/Assessment";
+import { ConvertDate } from "../../../Utils";
+import { selectGroups } from "../../../Redux/slices/programSlice";
 
 interface AssessmentItemProps {
   title: string;
@@ -20,7 +25,7 @@ interface AssessmentItemProps {
   requiredSubmissions: number;
 }
 
-const assessments: AssessmentItemProps[] = [
+const exampleAssessments: AssessmentItemProps[] = [
   {
     title: "Math Quiz 1",
     open: "23-08-2023 10:00am",
@@ -51,26 +56,41 @@ const assessments: AssessmentItemProps[] = [
   },
 ];
 const AssessmentItem = ({
-  submission,
+  assessment,
   onPress,
 }: {
-  submission: AssessmentItemProps;
+  assessment: Assessment;
   onPress: () => void;
-}) => {
+  }) => {
+    
+  const openDate = new Date(assessment.open)
+  const closeDate = new Date(assessment.close)
+  const groups = useAppSelector(selectGroups)
+  
+  const getRequiredSubmissions = () => {
+    const requiredGroups = groups.filter(group => assessment.groups.includes(group.groupId))
+    if (requiredGroups)
+      return requiredGroups.reduce((acc, group) => acc + group.students.length, 0)
+    return 0
+  }
+  const getNumSubmissions = () => {
+    return 0
+  }
+  
   return (
     <TouchableOpacity onPress={onPress} style={styles.AssessmentContainer}>
       <Text style={[styles.buttonText, styles.buttonTextTitle]}>
-        {submission.title}
+        {assessment.title}
       </Text>
 
       <View style={styles.dates}>
-        <Text style={styles.timeText}>Open {submission.open}</Text>
-        <Text style={styles.timeText}>Close {submission.close}</Text>
+        <Text style={styles.timeText}>Open {ConvertDate(openDate)}</Text>
+        <Text style={styles.timeText}>Close {ConvertDate(closeDate)}</Text>
       </View>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
         <Ionicons name="ellipse" size={8} color="#33BD02" />
         <Text style={styles.submissionText}>
-          {submission.currentSubmissions}/{submission.requiredSubmissions}{" "}
+          {getNumSubmissions()}/{getRequiredSubmissions()}{" "}
           submissions
         </Text>
       </View>
@@ -94,6 +114,12 @@ const AssessmentsView = () => {
     setIsShowing(true);
   };
 
+  const assessments = useAppSelector(selectAssessments)
+
+  useEffect(() => {
+    console.log(assessments)
+  },[assessments])
+
   return isShowing ? (
     <AssessmentView setIsShowing={setIsShowing} />
   ) : (
@@ -109,7 +135,7 @@ const AssessmentsView = () => {
         data={assessments}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <AssessmentItem onPress={OnPressItem} submission={item} />
+          <AssessmentItem onPress={OnPressItem} assessment={item} />
         )}
       />
     </View>

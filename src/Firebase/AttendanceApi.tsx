@@ -1,9 +1,11 @@
-import firestore, { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import firestore, {
+  FirebaseFirestoreTypes,
+} from "@react-native-firebase/firestore";
 import { ErrorCode, FirestoreResponse } from "./Types";
 import { Lesson, LessonConverter } from "../Types/Lesson";
 
 import { GroupsRef, LessonsRef } from "./Firebase";
-import { Group } from "../Types/Group";
+import { Group, GroupConverter } from "../Types/Group";
 
 export const addLessonToProgram = async (programId: string, lesson: Lesson) => {
   try {
@@ -21,11 +23,9 @@ export const addLessonToProgram = async (programId: string, lesson: Lesson) => {
   }
 };
 
-export const getLessonsForGroup = async (
-  group: Group
-): Promise<Lesson[]> => {
+export const getLessonsForGroup = async (group: Group): Promise<Lesson[]> => {
   try {
-    const lessonsRef = LessonsRef(group.groupId)
+    const lessonsRef = LessonsRef(group.groupId);
     const lessonsSnapshot = await lessonsRef.get();
 
     const lessons: Lesson[] = lessonsSnapshot.docs.map((doc) => {
@@ -42,52 +42,92 @@ export const getLessonsForGroup = async (
   }
 };
 
-export const getLessonsForStudent = async (studentGroups: string[]): Promise<Lesson[][]> => {
+export const getLessonsForStudent = async (
+  studentGroups: string[]
+): Promise<Lesson[]> => {
   try {
-    const allLessons: Lesson[][] = [];
-    const nowDate = firestore.Timestamp.fromDate( new Date())
-    for (const groupId of studentGroups) {
-      const lessonsRef = LessonsRef(groupId).where('end', '>=', nowDate)
+    const nowDate = firestore.Timestamp.fromDate(new Date());
+    const promises = studentGroups.map(async (groupId) => {
+      const lessonsRef = LessonsRef(groupId).where("end", ">=", nowDate);
       const lessonsSnapshot = await lessonsRef.get();
-      const lessons: Lesson[] = lessonsSnapshot.docs.map(
-        (doc) => doc.data() as Lesson
+      const result = lessonsSnapshot.docs.map((doc) =>
+        LessonConverter.fromFirestore(doc, groupId)
       );
-      allLessons.push(lessons);
-    }
+      return result;
+    });
+
+    // Execute all promises in parallel
+    const lessonsArrays = await Promise.all(promises);
+
+    // Flatten the arrays of lessons into a single array
+    const allLessons = lessonsArrays.flat();
 
     return allLessons;
   } catch (error) {
     console.error("Error retrieving lessons:", error);
-    return error // Or handle the error as needed
+    throw error; // Throw the error so it can be handled by the calling code
   }
 };
 
+//Groups/groupId/students contains studentId
 export const getGroupsForStudent = async (
   studentId: string,
   programs: string[]
-): Promise<FirestoreResponse<Group[]>> => {
+): Promise<Group[]> => {
+  const groups: Group[] = [];
   try {
-    const groups: Group[] = [];
-
-    for (const programId of programs) {
+    const fetchGroupsFromProgram = async (programId: string) => {
       const groupsRef = GroupsRef(programId);
       const groupsSnapshot = await groupsRef
         .where("students", "array-contains", studentId)
         .get();
-     
-      for (const doc of groupsSnapshot.docs) {
-        const data = { ...doc.data(), groupId: doc.id } as Group
-        groups.push(data);
-      }
+
+      const programGroups = groupsSnapshot.docs.map((doc) =>
+        GroupConverter.fromFirestore(doc)
+      );
+      return programGroups;
+    };
+
+    for (const programId of programs) {
+      const programGroups = await fetchGroupsFromProgram(programId);
+      groups.push(...programGroups);
     }
 
-    return { success: true, data: groups };
+    return groups;
   } catch (error) {
     console.error("Error retrieving groups:", error);
-    return {
-      success: false,
-      error: ErrorCode.ReadError, // Assuming the error object has a code property
+    throw new Error(ErrorCode.ReadError);
+  }
+};
+
+//Groups/groupId/tutors contains tutorId
+export const getGroupsForTutor = async (
+  tutorId: string,
+  programs: string[]
+): Promise<Group[]> => {
+  const groups: Group[] = [];
+  try {
+    const fetchGroupsFromProgram = async (programId: string) => {
+      const groupsRef = GroupsRef(programId);
+      const groupsSnapshot = await groupsRef
+        .where("tutors", "array-contains", tutorId)
+        .get();
+
+      const programGroups = groupsSnapshot.docs.map((doc) =>
+        GroupConverter.fromFirestore(doc)
+      );
+      return programGroups;
     };
+
+    for (const programId of programs) {
+      const programGroups = await fetchGroupsFromProgram(programId);
+      groups.push(...programGroups);
+    }
+
+    return groups;
+  } catch (error) {
+    console.error("Error retrieving groups:", error);
+    throw new Error(ErrorCode.ReadError);
   }
 };
 

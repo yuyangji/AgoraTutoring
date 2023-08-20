@@ -14,6 +14,8 @@ import { Feather } from "@expo/vector-icons";
 
 import { AntDesign } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { useAppSelector } from "../../../Redux/hooks";
+import { selectAssessments } from "../../../Redux/slices/assessmentsSlice";
 
 interface StudentListItemProps {
   studentName: string;
@@ -63,6 +65,8 @@ const StudentItem = ({ data }: { data: StudentListItemProps }) => {
 
 const AssessmentView = ({ setIsShowing }) => {
   const [showMore, setShowMore] = useState(false);
+
+  const assessments = useAppSelector(selectAssessments)
 
   return (
     <View>

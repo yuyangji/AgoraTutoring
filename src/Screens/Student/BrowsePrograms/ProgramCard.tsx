@@ -3,12 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { MyTheme } from "../../../useGlobalStyles";
 import { ConvertDate } from "../../../Utils";
-import { ProgramLocal } from "../../../Types/Program";
+import { Program } from "../../../Types/Program";
 
+export type EnrolmentState = "enrolled" | "pending" | "rejected" | "none";
 
-export interface CourseCardProps extends Omit<ProgramLocal, "admin"> {
+export interface CourseCardProps extends Omit<Program, "admin"> {
   onPressEnrol: (programId: string) => void;
-  isEnrolled: boolean;
+  enrolmentState: EnrolmentState;
 }
 
 // const EnrolButton = ({ onPress }: { onPress: () => void }) => {
@@ -25,6 +26,11 @@ export interface CourseCardProps extends Omit<ProgramLocal, "admin"> {
 // }
 
 const CourseCard = ({ props }: { props: CourseCardProps }) => {
+
+  const startDate = new Date(props.start)
+  const endDate = new Date( props.end)
+  
+
   return (
     <View
       style={{
@@ -59,10 +65,8 @@ const CourseCard = ({ props }: { props: CourseCardProps }) => {
           </View>
 
           <View style={{ flexDirection: "row", gap: 15, marginVertical: 10 }}>
-            <Text style={styles.timeText}>
-              Starts {ConvertDate(props.start)}
-            </Text>
-            <Text style={styles.timeText}>Ends {ConvertDate(props.end)}</Text>
+            <Text style={styles.timeText}>Starts {ConvertDate(startDate)}</Text>
+            <Text style={styles.timeText}>Ends {ConvertDate(endDate)}</Text>
           </View>
         </View>
         <View style={styles.rightContainer}>
@@ -70,17 +74,23 @@ const CourseCard = ({ props }: { props: CourseCardProps }) => {
             ${props.price} <Text>/{props.rate}</Text>
           </Text>
           <TouchableOpacity
-            style={styles.enrolButton}
+            style={[
+              styles.enrolButton,
+              props.enrolmentState == "enrolled" && {
+                backgroundColor: MyTheme.colors.success,
+              },
+            ]}
             onPress={() => props.onPressEnrol(props.programId)}
-            disabled={props.isEnrolled}
+            disabled={props.enrolmentState != "none"}
           >
-            <Text
-              style={[
-                styles.buttonText,
-                props.isEnrolled && { backgroundColor: MyTheme.colors.success },
-              ]}
-            >
-              {props.isEnrolled ? "Enrolled" : "Enrol"}
+            <Text style={[styles.buttonText]}>
+              {props.enrolmentState == "enrolled"
+                ? "Enrolled"
+                : props.enrolmentState == "none"
+                ? "Enrol"
+                : props.enrolmentState == "pending"
+                ? "Pending"
+                : "Rejected"}
             </Text>
           </TouchableOpacity>
         </View>

@@ -11,9 +11,11 @@ import { TutorRootStackParamList } from "./NavigatorTypes";
 export type AdminViewProp = NativeStackScreenProps<TutorRootStackParamList, 'ProgramNavigator'>
 
 const Tab = createMaterialTopTabNavigator();
-function ProgramNavigator({ route, navigation }: AdminViewProp) {
 
-  const program = route.params;
+
+const ProgramNavigator = ({ route, navigation }: AdminViewProp) => {
+
+  const {programId} = route.params;
 
   return (
     <Tab.Navigator
@@ -24,9 +26,8 @@ function ProgramNavigator({ route, navigation }: AdminViewProp) {
         tabBarStyle: { backgroundColor: MyTheme.colors.primary },
       })}
     >
-      <Tab.Screen name="Admin" component={Admin} initialParams={{ program }} />
-      <Tab.Screen name="Assessments" component={AssessmentsView} initialParams={{ program }} />
-      <Tab.Screen name="Lessons" component={GroupListView} initialParams={{ program }} />
+      <Tab.Screen name="Admin" component={Admin} initialParams={{ programId }} />
+      <Tab.Screen name="Groups" component={GroupListView} initialParams={{ programId }} />
     </Tab.Navigator>
   );
 }

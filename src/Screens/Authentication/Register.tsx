@@ -19,7 +19,8 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { MyTheme } from "../../useGlobalStyles";
 import { User } from "../../Types/Users";
 import { useAppDispatch } from "../../Redux/hooks";
-import { createUserEmailAndPassword } from "../../Redux/userSlice";
+import { createUserEmailAndPassword } from "../../Redux/slices/userSlice";
+
 
 const personIcon = <Ionicons name="person-outline" size={24} color={MyTheme.colors.primary} />
 const lockIcon = <MaterialIcons name="lock-outline" size={24}color={MyTheme.colors.primary}  />

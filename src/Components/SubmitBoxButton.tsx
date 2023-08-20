@@ -1,14 +1,16 @@
-import { Pressable, View, Text, Button, StyleSheet } from "react-native";
+import { TouchableOpacity, View, Text, Button, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
-const SubmitBoxButton = () => {
+const SubmitBoxButton = ({pickResults, onPickDocuments}) => {
+
+
   return (
-    <Pressable>
+    <TouchableOpacity onPress={onPickDocuments}>
       <View style={styles.submitBoxContainer}>
         <FontAwesome name="upload" size={30} color="#585858" />
         <Text>Tap to upload</Text>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

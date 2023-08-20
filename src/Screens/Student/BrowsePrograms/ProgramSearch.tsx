@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react";
 import { View, FlatList } from "react-native";
 import CourseCard, { CourseCardProps } from "./ProgramCard";
 import { useAppDispatch, useAppSelector } from "../../../Redux/hooks";
-import { enrolInProgram } from "../../../Redux/programSlice";
-import { selectPrograms, selectUser } from "../../../Redux/userSlice";
+import {
+  enrolInProgram,
+  selectPrograms,
+} from "../../../Redux/slices/programSlice";
 import { globalStaticStyles } from "../../../useGlobalStyles";
 import SearchField from "../../../Components/SearchBar";
 import { getAllPrograms } from "../../../Firebase/Firebase";
 import ConfirmationModal from "./ConfirmationModal";
-import { ProgramLocal } from "../../../Types/Program";
+import { Program } from "../../../Types/Program";
+import { selectUser } from "../../../Redux/slices/userSlice";
+import { getStudentEnrolmentRequests } from "../../../Firebase/EnrolmentApi";
 
 // const dummyData: Omit<CourseCardProps, "onPressEnrol" | "admin">[] = [
 //   {
@@ -30,55 +34,70 @@ import { ProgramLocal } from "../../../Types/Program";
 // ];
 
 const ProgramSearch = () => {
-  const [programs, setPrograms] = useState<ProgramLocal[]>([]);
+  const [allPrograms, setPrograms] = useState<Program[]>([]);
+  const [pendingPrograms, setPendingPrograms] = useState<string[]>([]);
+  const [selectedProgramID, setSelectedProgramID] = useState<string | null>(
+    null
+  );
+
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedProgramID, setSelectedProgramID] = useState<string | null>(null);
+
   const dispatch = useAppDispatch();
   const myPrograms = useAppSelector(selectPrograms);
-  const user = useAppSelector(selectUser)
+  const user = useAppSelector(selectUser);
 
-  const onPressEnrol = (programID: string) => {
+  const onPressEnrolbtn = (programID: string) => {
     setSelectedProgramID(programID);
     setShowModal(true);
-    console.log("showing modal")
+    console.log("showing modal");
   };
 
-  const ConfirmEnrolment = async() => {
+  const onPressConfirmEnrolment = async () => {
+    setLoading(true);
     if (selectedProgramID) {
-      await dispatch(enrolInProgram(selectedProgramID))
+      await dispatch(enrolInProgram(selectedProgramID));
     }
     setLoading(false);
     setShowModal(false);
-  }
+  };
 
-  const OnPressConfirmEnrol = () => {
-    setLoading(true);
-    ConfirmEnrolment()
+  const isPending = (programId: string) => {
+    return pendingPrograms.findIndex((id) => id == programId) != -1;
+  };
+  const isEnrolled = (programId: string): boolean => {
+    return myPrograms.findIndex((p) => p == programId) != -1;
   };
 
   useEffect(() => {
-    getAllPrograms().then((response) => {
-      if (response.success) {
-        console.log(response.data);
-        setPrograms(response.data);
-      }
-    });
+    const getData = async () => {
+      try {
+        const programs = await getAllPrograms();
+        const requests = await getStudentEnrolmentRequests(user.id);
+
+        setPrograms(programs);
+        setPendingPrograms(requests.map((request) => request.programId));
+      } catch (e) {}
+    };
+    getData();
+    return () => {};
   }, []);
 
   return (
     <View style={globalStaticStyles.screen}>
       <SearchField additionalStyles={{ marginBottom: 14 }} />
       <FlatList
-        data={programs}
+        data={allPrograms}
         renderItem={({ item }) => (
           <CourseCard
             props={{
               ...item,
-              onPressEnrol: onPressEnrol,
-              isEnrolled:
-                myPrograms.findIndex((programID) => programID == item.programId) !=
-                -1,
+              onPressEnrol: onPressEnrolbtn,
+              enrolmentState: isPending(item.programId)
+                ? "pending"
+                : isEnrolled(item.programId)
+                ? "enrolled"
+                : "none",
             }}
           />
         )}
@@ -88,7 +107,7 @@ const ProgramSearch = () => {
         showModal={showModal}
         setShowModal={setShowModal}
         loading={loading}
-        onConfirmEnrol={OnPressConfirmEnrol}
+        onConfirmEnrol={onPressConfirmEnrolment}
       />
     </View>
   );

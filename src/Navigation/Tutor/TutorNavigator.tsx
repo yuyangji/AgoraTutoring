@@ -28,7 +28,7 @@ export default function TutorStack() {
             headerShown: true,
             headerStyle: { backgroundColor: MyTheme.colors.primary },
             headerTitleStyle: { color: 'white', fontWeight: '400' },
-            headerTitle: route.params.program.title,
+             headerTitle: route.params.headerTitle,
           headerTintColor : 'white'
           })}
         />

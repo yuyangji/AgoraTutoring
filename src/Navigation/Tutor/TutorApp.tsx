@@ -3,17 +3,20 @@ import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Home from "../../Screens/Tutor/Home";
-import Attendance from "../../Screens/Tutor/Attendence";
+import Attendance from "../../Screens/Student/Attendence";
 import { useTheme } from "@react-navigation/native";
 import { MyTheme } from "../../useGlobalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BottomTabBar from "../../Components/Navigation/BottomTabBar";
 import HeaderMenu from "../../Navigation/HeaderMenu";
 import { useAppDispatch } from "../../Redux/hooks";
-import { logout } from "../../Redux/userSlice";
 import GroupChat from "../../Screens/Shared/GroupChat";
-import MySubjects from "../../Screens/Tutor/MySubjects";
-import { IconAssessments, IconCalendar, IconChat, IconHome, IconNotifications, IconProfile } from "../BottomTabIcons";
+
+import { IconAssessments, IconCalendar, IconChat, IconHome, IconMenu, IconNotifications, IconProfile } from "../BottomTabIcons";
+import { logout } from "../../Redux/slices/userSlice";
+import AssessmentView from "../../Screens/Tutor/Program/AssessmentView";
+import AssessmentsView from "../../Screens/Tutor/Program/AssessmentList";
+import MenuScreen from "../../Screens/Student/MenuScreen";
 
 
 const BottomTab = createBottomTabNavigator();
@@ -47,8 +50,6 @@ export const TutorApp = () => {
         headerTitleAlign: "center",
         headerRight: () => (
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            {IconNotifications}
-            {IconProfile}
             <HeaderMenu onLogout={onPressLogout} />
           </View>
         ),
@@ -59,9 +60,16 @@ export const TutorApp = () => {
         component={Home}
         options={{
           tabBarIcon: IconHome,
+          headerShown: false,
         }}
       />
-
+      <BottomTab.Screen
+        name="Calendar"
+        component={Attendance}
+        options={{
+          tabBarIcon: IconCalendar,
+        }}
+      />
       <BottomTab.Screen
         name="Chat"
         component={GroupChat}
@@ -71,17 +79,19 @@ export const TutorApp = () => {
       />
 
       <BottomTab.Screen
-        name="Subjects"
-        component={MySubjects}
+        name="Assess"
+        component={AssessmentsView}
         options={{
           tabBarIcon: IconAssessments,
         }}
       />
-      <BottomTab.Screen
-        name="Attendance"
-        component={Attendance}
+
+
+<BottomTab.Screen
+        name="Menu"
+        component={MenuScreen}
         options={{
-          tabBarIcon: IconCalendar,
+          tabBarIcon: IconMenu,
         }}
       />
     </BottomTab.Navigator>

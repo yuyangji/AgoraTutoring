@@ -15,6 +15,7 @@ import { CTAButton } from "../../Components/CTAButton/CTAButton";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import RoundTextField from "../../Components/RoundTextField";
 import { MaterialIcons } from '@expo/vector-icons';
+import { loginUser } from "../../Firebase/AuthenticationApi";
 
 const lockIcon = <MaterialIcons name="lock-outline" size={24} color="black" />
 const emailIcon = <MaterialIcons name="mail-outline" size={24} color="black" />
@@ -29,9 +30,11 @@ export const Login = () => {
     nav.push("Register");
   };
 
-  const loginUser = async () => {
+  const onPressLogin = async () => {
     // Disable buttons
-
+    console.log("logging in")
+    const response = await loginUser(email!, password!);
+    console.log(response)
     //log in, nav stack automatically changes higher in the tree.
   };
 
@@ -64,7 +67,7 @@ export const Login = () => {
             <Text style={{ color: '#0E81F5' }}>Forgot Password?</Text>
           </Pressable>
           <View style={{marginBottom: 20}}></View>
-          <CTAButton title="Login" onPress={loginUser} variant="primary" />
+          <CTAButton title="Login" onPress={onPressLogin} variant="primary" />
 
           <View style={{ flexDirection: 'row', gap: 5, marginTop: 30 }}>
             <Text style={{ fontWeight: '300', fontSize: 15 }} >Don't have an account?</Text>

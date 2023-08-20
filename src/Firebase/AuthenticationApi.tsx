@@ -12,24 +12,29 @@ import { FirestoreResult } from "./Types";
 //Get the user's details by id stored in firestore
 export const getUserById = async (
   uid: string
-): Promise<FirestoreResult<User>> => {
+) => {
   try {
     const userDocRef = firestore().collection("Users").doc(uid);
     const userDoc = await userDocRef.get();
-
-    if (userDoc.exists) {
-      return {
-        success: true,
-        data: { id: uid, ...(userDoc.data() as Omit<User, "id">) },
-      };
-    } else {
-      return { success: false, error: new Error("User does not exist") };
-    }
+    return  { id: uid, ...(userDoc.data() as Omit<User, "id">)} as User;
+      
   } catch (error) {
-    console.log("Error getting user:", error);
-    return { success: false, error };
+   throw error
   }
 };
+
+export const loginUser = async(
+  email: string,
+  password: string
+) => {
+  try {
+    const authResult = await auth().signInWithEmailAndPassword(email, password)
+    return authResult.user
+  } catch (error) {
+    throw error
+  }
+}
+
 
 export const createUserAuth = async (
   email: string,

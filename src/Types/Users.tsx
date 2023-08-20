@@ -28,12 +28,6 @@ export interface Enrolment{
   lastName: string;
   joinDate: FirebaseFirestoreTypes.Timestamp
 }
-export interface Assessment{
-  assessmentID: string;
-  submissionInstructions: string;
-  deadline: string;
-}
-
 export interface Attendance{
   documentID: string;
   lessonID: string;

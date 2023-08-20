@@ -9,8 +9,8 @@ export type FirestoreResult<T> = {
 
 
 export enum ErrorCode {
-  ReadError,
-  InvalidError,
+  ReadError= "Failed to read from db",
+  InvalidError = "invalid query",
 }
 
 export type FirestoreResponse<T> =

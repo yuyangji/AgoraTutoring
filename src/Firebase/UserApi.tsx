@@ -1,7 +1,7 @@
 
 import firestore from '@react-native-firebase/firestore';
 import { Attendance,  Enrolment, EnrolmentRequest, User } from '../Types/Users';
-import { Program, ProgramLocal } from "../Types/Program";
+import { Program } from "../Types/Program";
 import { FirestoreResult } from './Types';
 import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 

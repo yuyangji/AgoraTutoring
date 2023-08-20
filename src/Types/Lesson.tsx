@@ -8,9 +8,10 @@ export class Lesson {
     public tutors: Tutor[],
     public instructions: string,
     public location: string,
-    public start: Date,
-    public end: Date,
-    public attendance: string[]
+    public start: string,
+    public end: string,
+    public attendance: string[],
+    public groupId?: string //Can fill this in after. since to get lesson, you need groupid.
   ) {}
 
   toString(): string {
@@ -24,32 +25,35 @@ export type LessonDbModel = {
   start: FirebaseFirestoreTypes.Timestamp;
   end: FirebaseFirestoreTypes.Timestamp;
   tutors: Tutor[];
+
   attendance: string[];
 };
 
 export const LessonConverter = {
   toFirestore: (lesson: Lesson): LessonDbModel => {
     return {
-      start: FirebaseFirestoreTypes.Timestamp.fromDate(lesson.start),
-      end: FirebaseFirestoreTypes.Timestamp.fromDate(lesson.end),
+      start: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(lesson.start)),
+      end: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(lesson.end)),
       instructions: lesson.instructions,
       location: lesson.location,
       tutors: lesson.tutors,
-      attendance: lesson.attendance
+
+      attendance: lesson.attendance,
     };
   },
 
-  fromFirestore: (snapshot): Lesson => {
+  fromFirestore: (snapshot, groupId): Lesson => {
     const data = snapshot.data() as LessonDbModel;
 
     return {
       lessonId: snapshot.id,
       tutors: data.tutors,
-      start: data.start.toDate(),
-      end: data.end.toDate(),
+      start: data.start.toDate().toISOString(),
+      end: data.end.toDate().toISOString(),
       instructions: data.instructions,
       location: data.location,
-      attendance:data.attendance
+      attendance: data.attendance,
+      groupId: groupId,
     };
   },
 };

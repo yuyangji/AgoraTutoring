@@ -3,7 +3,6 @@ import { View, StyleSheet} from "react-native";
 import { EnrolmentRequest } from "../../../Types/Users";
 import { useAppSelector } from "../../../Redux/hooks";
 import { useEffect, useState } from "react";
-import { selectUser } from "../../../Redux/userSlice";
 import { getEnrolmentRequests, getStudentsFromProgram } from "../../../Firebase/EnrolmentApi";
 import SegmentedControl from "../../../Components/Navigation/SegmentedControl";
 import { MyTheme } from "../../../useGlobalStyles";
@@ -11,6 +10,8 @@ import SearchField from "../../../Components/SearchBar";
 import People from "./PeopleView";
 import Requests from "./RequestsView";
 import { AdminViewProp } from "../../../Navigation/Tutor/ProgramNavigator";
+import { selectUser } from "../../../Redux/slices/userSlice";
+import { selectProgramById } from "../../../Redux/slices/programSlice";
 
 const Listing = () => {
   return <View></View>;
@@ -24,17 +25,21 @@ type StudentType = {
 }
 
 const Admin = ({ route, navigation }: AdminViewProp) => {
-  const options = ["Enrolled", "Offering", "Requests"];
+  const options = ["Enrolled", "Listing", "Requests"];
 
   const [selected, setSelected] = useState(options[0]);
   const [requests, setRequests] = useState<EnrolmentRequest[]>([]);
 
   const [students, setStudents] = useState<StudentType[]>([]);
 
-  const { program } = route.params;
+  const { programId } = route.params;
+  console.log("program id ", programId)
   const user = useAppSelector(selectUser);
+  const program = useAppSelector(selectProgramById)[programId]
+
 
   useEffect(() => {
+    console.log("admin program ", program)
     if (user.id == program.admin) {
       getEnrolmentRequests(program.programId).then((result) => {
         if (result.requests) {

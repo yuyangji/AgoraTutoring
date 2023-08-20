@@ -7,13 +7,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MyTheme } from "../useGlobalStyles";
 import BottomTabBar from "../Components/Navigation/BottomTabBar";
 import { useAppDispatch } from "../Redux/hooks";
-import { logout } from "../Redux/userSlice";
 import HeaderMenu from "./HeaderMenu";
 import { IconNotifications } from "./BottomTabIcons";
+import { logout } from "../Redux/slices/userSlice";
 
-const BottomTab = createBottomTabNavigator();
+export const BottomTab = createBottomTabNavigator();
 
-const BottomTabNavigator = ({ children }) => {
+const BottomTabContainer = ({ children }) => {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
@@ -26,6 +26,8 @@ const BottomTabNavigator = ({ children }) => {
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: MyTheme.colors.secondary,
         tabBarInactiveTintColor: "white",
+        tabBarBackgroundColor: 'white',
+        
         headerTintColor: "white",
         headerRightContainerStyle: {
           paddingRight: 5,
@@ -40,7 +42,7 @@ const BottomTabNavigator = ({ children }) => {
         headerTitleAlign: "center",
         headerRight: () => (
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            {IconNotifications}
+        
             <HeaderMenu onLogout={onPressLogout} />
           </View>
         ),
@@ -54,4 +56,4 @@ const BottomTabNavigator = ({ children }) => {
   );
 };
 
-export default BottomTabNavigator;
+export default BottomTabContainer;

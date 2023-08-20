@@ -1,37 +1,35 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../../Screens/Tutor/Home";
-import Attendance from "../../Screens/Tutor/Attendence";
+import Attendance from "../../Screens/Student/Attendence";
 import Assessments from "../../Screens/Student/Assessments/Assessments";
-import BottomTabNavigator from "../BottomNavigator";
+import BottomTabContainer, { BottomTab } from "../BottomNavigator";
 import ProgramSearch from "../../Screens/Student/BrowsePrograms/ProgramSearch";
 import GroupChat from "../../Screens/Shared/GroupChat";
-import { IconEnrol, IconAssessments, IconCalendar, IconChat, IconHome } from "../BottomTabIcons";
+import { IconEnrol, IconAssessments, IconCalendar, IconChat, IconHome, IconMenu } from "../BottomTabIcons";
+import MenuScreen from "../../Screens/Student/MenuScreen";
 
-
-const BottomTab = createBottomTabNavigator();
 
 export const StudentAppNavigator = () => {
 
   return (
-    <BottomTabNavigator>
+    <BottomTabContainer>
 
       <BottomTab.Screen
         name="Home"
         component={Home}
         options={{
-          tabBarIcon: IconHome
+          tabBarIcon: IconHome,
+          headerShown: false
         }}
 
       />
-
       <BottomTab.Screen
-        name="Products"
-        component={ProgramSearch}
+        name="Attendance"
+        component={Attendance}
         options={{
-          tabBarIcon: IconEnrol
+          tabBarIcon: IconCalendar
         }}
-
       />
 
       <BottomTab.Screen
@@ -44,20 +42,24 @@ export const StudentAppNavigator = () => {
 
 
       <BottomTab.Screen
-        name="Subjects"
+        name="Assessments"
         component={Assessments}
         options={{
           tabBarIcon: IconAssessments
         }}
       />
-      <BottomTab.Screen
-        name="Attendance"
-        component={Attendance}
+
+
+      
+<BottomTab.Screen
+        name="Menu"
+        component={MenuScreen}
         options={{
-          tabBarIcon: IconCalendar
+          tabBarIcon: IconMenu
         }}
+
       />
 
-    </BottomTabNavigator>
+    </BottomTabContainer>
   );
 };
