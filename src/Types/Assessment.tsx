@@ -1,6 +1,7 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { Submission } from "./Submission";
 
+import { FileDb } from "./File";
+import { Submission } from "./Submission";
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore'
 
 
 export interface Assessment {
@@ -8,32 +9,37 @@ export interface Assessment {
   title: string;
   programId: string;
   groups: string[];
+  files: FileDb[];
   submitInstructions: string;
   open: string;  // Changed from Date to string
   close: string; // Changed from Date to string
 }
 
 export interface AssessmentDb {
-  assessmentId: string;
+
   title: string;
   programId: string;
   groups: string[];
+  files: FileDb[];
   submitInstructions: string;
   open: FirebaseFirestoreTypes.Timestamp;
   close:  FirebaseFirestoreTypes.Timestamp;
 }
 
 export const assessmentConverter = {
-  toFirestore(assessment: Assessment): AssessmentDb {
+  toFirestore(assessment: Omit<Assessment, 'assessmentId'>): AssessmentDb {
     return {
       ...assessment,
-      open: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(assessment.open)),
-      close: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(assessment.close))
+      open: firestore.Timestamp.fromDate(new Date(assessment.open)),
+      close: firestore.Timestamp.fromDate(new Date(assessment.close))
     };
   },
 
   fromFirestore(snapshot: FirebaseFirestoreTypes.DocumentSnapshot, programId:string): Assessment {
     const data = snapshot.data() as AssessmentDb;
+    if (data.files == undefined)
+      data.files = [];
+
     return {
       ...data,
       programId: programId,

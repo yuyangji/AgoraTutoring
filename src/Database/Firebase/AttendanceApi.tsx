@@ -2,53 +2,40 @@ import firestore, {
   FirebaseFirestoreTypes,
 } from "@react-native-firebase/firestore";
 import { ErrorCode, FirestoreResponse } from "./Types";
-import { Lesson, LessonConverter } from "../Types/Lesson";
+import { Lesson, LessonConverter } from "../../Types/Lesson";
+import { GroupsByProgramId, LessonsDb } from "./Firebase";
+import { Group, GroupConverter } from "../../Types/Group";
 
-import { GroupsRef, LessonsRef } from "./Firebase";
-import { Group, GroupConverter } from "../Types/Group";
-
-export const addLessonToProgram = async (programId: string, lesson: Lesson) => {
+export const addLessonForGroup = async (groupId: string, lesson: Lesson) => {
   try {
     const lessonsRef = firestore()
-      .collection("Programs")
-      .doc(programId)
+      .collection("Groups")
+      .doc(groupId)
       .collection("Lessons");
     const lessonDb = LessonConverter.toFirestore(lesson);
+    
+
     const result = await lessonsRef.add(lessonDb);
 
     return result.id; // Return the document ID of the newly created lesson
   } catch (error) {
     console.error("Error adding lesson for group:", error);
-    return;
+    throw error
   }
 };
 
-export const getLessonsForGroup = async (group: Group): Promise<Lesson[]> => {
-  try {
-    const lessonsRef = LessonsRef(group.groupId);
-    const lessonsSnapshot = await lessonsRef.get();
 
-    const lessons: Lesson[] = lessonsSnapshot.docs.map((doc) => {
-      return {
-        lessonId: doc.id,
-        ...(doc.data() as Lesson), // Assuming the structure of Lesson matches the document
-      };
-    });
-
-    return lessons;
-  } catch (error) {
-    console.error("Error retrieving lessons:", error);
-    throw error; // or return an appropriate error response
-  }
-};
-
-export const getLessonsForStudent = async (
-  studentGroups: string[]
+//Iterate through all the groups and get the lessons for each group
+export const getLessonsForGroup = async (
+  groupIds: string[]
 ): Promise<Lesson[]> => {
   try {
-    const nowDate = firestore.Timestamp.fromDate(new Date());
-    const promises = studentGroups.map(async (groupId) => {
-      const lessonsRef = LessonsRef(groupId).where("end", ">=", nowDate);
+    const twentyDaysAgo = new Date();
+    twentyDaysAgo.setDate(twentyDaysAgo.getDate() - 20);
+    const startDate = firestore.Timestamp.fromDate(twentyDaysAgo);
+    
+    const promises = groupIds.map(async (groupId) => {
+      const lessonsRef = LessonsDb(groupId).where("end", ">=", startDate);
       const lessonsSnapshot = await lessonsRef.get();
       const result = lessonsSnapshot.docs.map((doc) =>
         LessonConverter.fromFirestore(doc, groupId)
@@ -61,6 +48,7 @@ export const getLessonsForStudent = async (
 
     // Flatten the arrays of lessons into a single array
     const allLessons = lessonsArrays.flat();
+    console.log("found lessons " , allLessons)
 
     return allLessons;
   } catch (error) {
@@ -77,7 +65,7 @@ export const getGroupsForStudent = async (
   const groups: Group[] = [];
   try {
     const fetchGroupsFromProgram = async (programId: string) => {
-      const groupsRef = GroupsRef(programId);
+      const groupsRef = GroupsByProgramId(programId);
       const groupsSnapshot = await groupsRef
         .where("students", "array-contains", studentId)
         .get();
@@ -108,7 +96,7 @@ export const getGroupsForTutor = async (
   const groups: Group[] = [];
   try {
     const fetchGroupsFromProgram = async (programId: string) => {
-      const groupsRef = GroupsRef(programId);
+      const groupsRef = GroupsByProgramId(programId);
       const groupsSnapshot = await groupsRef
         .where("tutors", "array-contains", tutorId)
         .get();

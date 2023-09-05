@@ -6,16 +6,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  TouchableHighlight,
 } from "react-native";
 import SearchField from "../../../Components/SearchBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { MyTheme } from "../../../useGlobalStyles";
+import { MyTheme } from "../../../Styles/useGlobalStyles";
 import AssessmentView from "./AssessmentView";
 import { useAppSelector } from "../../../Redux/hooks";
 import { selectAssessments } from "../../../Redux/slices/assessmentsSlice";
 import { Assessment } from "../../../Types/Assessment";
 import { ConvertDate } from "../../../Utils";
 import { selectGroups } from "../../../Redux/slices/programSlice";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { TutorRootStackParamList } from "../../../Navigation/Tutor/NavigatorTypes";
 
 interface AssessmentItemProps {
   title: string;
@@ -61,27 +65,26 @@ const AssessmentItem = ({
 }: {
   assessment: Assessment;
   onPress: () => void;
-  }) => {
-    
-  const openDate = new Date(assessment.open)
-  const closeDate = new Date(assessment.close)
-  const groups = useAppSelector(selectGroups)
-  
+}) => {
+  const openDate = new Date(assessment.open);
+  const closeDate = new Date(assessment.close);
+  const groups = useAppSelector(selectGroups);
+
   const getRequiredSubmissions = () => {
-    const requiredGroups = groups.filter(group => assessment.groups.includes(group.groupId))
+    const requiredGroups = groups.filter((group) =>
+      assessment.groups.includes(group.groupId)
+    );
     if (requiredGroups)
-      return requiredGroups.reduce((acc, group) => acc + group.students.length, 0)
-    return 0
-  }
+      return requiredGroups.reduce((acc, group) => acc + group.students.length, 0);
+    return 0;
+  };
   const getNumSubmissions = () => {
-    return 0
-  }
-  
+    return 0;
+  };
+
   return (
     <TouchableOpacity onPress={onPress} style={styles.AssessmentContainer}>
-      <Text style={[styles.buttonText, styles.buttonTextTitle]}>
-        {assessment.title}
-      </Text>
+      <Text style={[styles.buttonText, styles.buttonTextTitle]}>{assessment.title}</Text>
 
       <View style={styles.dates}>
         <Text style={styles.timeText}>Open {ConvertDate(openDate)}</Text>
@@ -90,8 +93,7 @@ const AssessmentItem = ({
       <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
         <Ionicons name="ellipse" size={8} color="#33BD02" />
         <Text style={styles.submissionText}>
-          {getNumSubmissions()}/{getRequiredSubmissions()}{" "}
-          submissions
+          {getNumSubmissions()}/{getRequiredSubmissions()} submissions
         </Text>
       </View>
 
@@ -105,44 +107,44 @@ const AssessmentItem = ({
   );
 };
 
+const AssessmentsList = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<TutorRootStackParamList>>();
 
-
-const AssessmentsView = () => {
-  const [isShowing, setIsShowing] = useState(false);
-
-  const OnPressItem = () => {
-    setIsShowing(true);
+  const onPressAssessment = (assessmentId: string) => {
+    navigation.navigate("Assessment", { assessmentId });
   };
 
-  const assessments = useAppSelector(selectAssessments)
+  const onPressAddProgram = () => {
+    navigation.navigate("CreateAssessment");
+  };
+
+  const assessments = useAppSelector(selectAssessments);
 
   useEffect(() => {
-    console.log(assessments)
-  },[assessments])
+    console.log(assessments);
+  }, [assessments]);
 
-  return isShowing ? (
-    <AssessmentView setIsShowing={setIsShowing} />
-  ) : (
+  return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
         <SearchField additionalStyles={{ flex: 1, borderRadius: 8 }} />
-        <Pressable style={{ ...styles.addBtn }}>
+        <TouchableOpacity style={{ ...styles.addBtn }} onPress={onPressAddProgram}>
           <Text style={{ color: "white" }}>+ Add</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <FlatList
         style={styles.listContainer}
         data={assessments}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
-          <AssessmentItem onPress={OnPressItem} assessment={item} />
+          <AssessmentItem onPress={() => onPressAssessment(item.assessmentId)} assessment={item} />
         )}
       />
     </View>
   );
 };
 
-export default AssessmentsView;
+export default AssessmentsList;
 
 const styles = StyleSheet.create({
   container: {

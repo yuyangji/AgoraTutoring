@@ -4,8 +4,9 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import useGlobalStyles, {
   MyTheme,
-  globalStaticStyles,
-} from "../../useGlobalStyles";
+  globalStyles,
+} from "../../Styles/useGlobalStyles";
+import { SafeScreen } from "../../Styles/Layout";
 
 const StudentListItem = ({ studentName, joinedDate }) => {
   return (
@@ -30,7 +31,7 @@ const YourStudents = () => {
   const style = useGlobalStyles();
 
   return (
-    <View style={globalStaticStyles.screen}>
+    <SafeScreen >
       <View
         style={{
           flexDirection: "row",
@@ -106,7 +107,7 @@ const YourStudents = () => {
           joinedDate="Joined 10th July 2023"
         />
       </View>
-    </View>
+    </SafeScreen>
   );
 };
 export default YourStudents;

@@ -3,21 +3,18 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../../Types/Users";
 import { Program } from "../../Types/Program";
 import { RootState } from "../store";
-import {
-  createUser,
-  createUserAuth,
-  getUserById,
-} from "../../Firebase/AuthenticationApi";
-import { FirestoreResult } from "../../Firebase/Types";
+import { createUser, getUserById } from "../../Database/Firebase/AuthenticationApi";
+
+import auth from "@react-native-firebase/auth";
 
 interface AppState {
-  user: User | null;
+  entity: User | null;
   isNew: boolean;
   programs: Program[];
 }
 
 let initialState: AppState = {
-  user: null,
+  entity: null,
   isNew: false,
   programs: [],
 };
@@ -25,9 +22,10 @@ let initialState: AppState = {
 export const fetchUserById = createAsyncThunk<
   User,
   string,
-  { rejectValue: {message: string}; state: RootState }
->("users/fetchByIdStatus", async (userId, { rejectWithValue, getState }) => {
-  if (getState().user.isNew) return;
+  { rejectValue: { message: string }; state: RootState }
+>("users/fetchUser", async (userId, { rejectWithValue, getState }) => {
+  if (getState().user.isNew) return rejectWithValue({ message: "User is new" });
+
   try {
     const response = await getUserById(userId);
     return response;
@@ -39,23 +37,24 @@ export const fetchUserById = createAsyncThunk<
 export const createUserEmailAndPassword = createAsyncThunk<
   User,
   { password: string } & Omit<User, "id">,
-  { rejectValue: Error }
+  { rejectValue: { message: string }; state: RootState }
 >("users/createUserEmail", async (details, { rejectWithValue }) => {
-  const authResult = await createUserAuth(details.email, details.password);
-  if (authResult.success == false) return rejectWithValue(authResult.error);
+  try {
+    const authResult = await auth().createUserWithEmailAndPassword(
+      details.email,
+      details.password
+    );
+    const { password, ...restOfDetails } = details;
 
-  const { password, ...restOfDetails } = details;
+    const newUser: User = {
+      id: authResult.user.uid,
+      ...restOfDetails,
+    };
 
-  const newUser: User = {
-    id: authResult.data.user.uid,
-    ...restOfDetails,
-  };
-  const createUserResult = await createUser(newUser);
-  if (createUserResult.success) return newUser;
-  //Unncessarily check for false because typescript complains for some reason
-  if (createUserResult.success == false) {
-    //TODO: REMOVE USER
-    return rejectWithValue(createUserResult.error);
+    const user = await createUser(newUser);
+    return newUser;
+  } catch (e) {
+    return rejectWithValue({ message: e.toString() });
   }
 });
 
@@ -64,28 +63,30 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = null;
+      state.entity = null;
     },
     updateUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
+      state.entity = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserById.fulfilled, (state, { payload }) => {
-        state.user = payload;
+        state.entity = payload;
       })
+      .addCase(fetchUserById.rejected, (state, { payload }) => {})
 
       .addCase(createUserEmailAndPassword.pending, (state, { payload }) => {
         state.isNew = true;
       })
       .addCase(createUserEmailAndPassword.fulfilled, (state, { payload }) => {
-        state.user = payload;
+        state.entity = payload;
       });
   },
 });
 
 export const { logout, updateUser } = userSlice.actions;
-export const selectUser = (state: RootState) => state.user.user;
-export const selectProgramIds = (state: RootState) => state.user.user.programs;
+export const selectUser = (state: RootState) => state.user.entity;
+export const selectUserId = (state: RootState) => state.user.entity?.id;
+export const selectProgramIds = (state: RootState) => state.user.entity.programs;
 export default userSlice.reducer;

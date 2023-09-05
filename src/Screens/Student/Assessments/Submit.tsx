@@ -1,126 +1,131 @@
-import { RouteProp, useNavigation, useTheme } from "@react-navigation/native";
-import { Pressable, View, Text, Button, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { FontAwesome } from "@expo/vector-icons";
-import { Submission } from "./SubmissionsView";
-import SubmitBoxButton from "../../../Components/SubmitBoxButton";
-import { MyTheme, globalStaticStyles } from "../../../useGlobalStyles";
-import { Assessment, AssessmentSubmission } from "../../../Types/Assessment";
-import { StudentRootStackParamList } from "../../../Navigation/Student/StudentNavigator";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useEffect, useState } from "react";
-import { useAppSelector } from "../../../Redux/hooks";
 import {
-  selectAssessments,
-  assessmentDict,
-} from "../../../Redux/slices/assessmentsSlice";
-import { selectSubmissionDict } from "../../../Redux/slices/submissionsSlice";
+  Pressable,
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  ScrollView,
+} from "react-native";
+import { MyTheme } from "../../../Styles/useGlobalStyles";
+import { StudentRootStackParamList } from "../../../Navigation/Student/StudentNavigator";
+import { useAppSelector } from "../../../Redux/hooks";
+import { selectAssessments } from "../../../Redux/slices/assessmentsSlice";
 import { ConvertDate } from "../../../Utils";
-import { selectUser } from "../../../Redux/slices/userSlice";
-import DocumentPicker, {
-  DocumentPickerResponse,
-} from "react-native-document-picker";
-import { SubmissionsRef } from "../../../Firebase/Firebase";
-import firestore from "@react-native-firebase/firestore";
-import storage from "@react-native-firebase/storage";
-type SubmissionScreenRouteProp = RouteProp<StudentRootStackParamList, "Submit">;
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useSubmissions } from "../../../hooks/useSubmission";
+import FileItem from "../../../Components/FileItem";
+import { Icons, SquareIcon } from "../../../Components/Icons/Icons";
+import {
+  BodyText,
+  H2,
+  H3,
+  HighlightedHeading,
+  SubHeading,
+} from "../../../Styles/StyledTexts";
+import TextBox from "../../../Styles/TextBox";
+import useSubmitAssessment from "../../../hooks/useSubmitAssessment";
 
-type Props = {
-  route: SubmissionScreenRouteProp;
-};
+type SubmissionScreenRouteProp = NativeStackScreenProps<
+  StudentRootStackParamList,
+  "Submit"
+>;
 
-const Submit = ({ route }: Props) => {
+const Submit = ({ navigation, route }: SubmissionScreenRouteProp) => {
   const { assessmentId, submissionId } = route.params;
-  const assessmentSelectorDict = useAppSelector(assessmentDict);
-  const submissionSelectorDict = useAppSelector(selectSubmissionDict);
-  const assessment = assessmentSelectorDict[assessmentId];
-  const user = useAppSelector(selectUser);
-  console.log(assessment);
-  const submission =
-    submissionId == "" || !(submissionId in submissionSelectorDict)
-      ? null
-      : submissionSelectorDict[submissionId];
 
-  const dateOpen = new Date(assessment.open);
-  const [pickResults, setPickResults] = useState<
-    DocumentPickerResponse[] | null
-  >();
-  useEffect(() => {}, []);
+  const assessment = useAppSelector(selectAssessments).find(
+    (a) => a.assessmentId == assessmentId
+  );
 
-  const OnPressSubmit = () => {
+  const { submission } = useSubmissions(assessmentId);
+
+  const { pickResults, onPickDocuments, loading, submit } =
+    useSubmitAssessment(assessmentId);
+
+  //convert to hook
+  const OnPressSubmit = async () => {
     if (pickResults == null) {
       alert("Please upload a file");
       return;
     }
-    handleUpload();
+    const result = await submit();
+    navigation.goBack();
   };
 
-  const onPickDocuments = async () => {
-    try {
-      // Picking multiple documents
-      const results = await DocumentPicker.pick({
-        type: [DocumentPicker.types.images, DocumentPicker.types.pdf],
-        allowMultiSelection: true,
-      });
-
-      setPickResults(results);
-    } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker
-      }
-    }
-  };
-  const handleUpload = async () => {
-    try {
-      if (!pickResults) return;
-      // Create a storage reference
-      const storageRef = storage().ref();
-
-      // Upload each file to Firebase Cloud Storage
-      const uploadPromises = pickResults.map(async (result) => {
-        const fileRef = storageRef.child(
-          `${assessmentId}/${user.id}/${result.name}`
-        );
-        await fileRef.putFile(result.uri);
-
-        // Get the download URL
-        return fileRef.getDownloadURL();
-      });
-
-      const fileUrls = await Promise.all(uploadPromises);
-
-      // Save the URLs to Firestore
-      const submissionRef = SubmissionsRef(assessment.programId, assessmentId);
-      await submissionRef.add({
-        fileUrls: fileUrls,
-        timestamp: firestore.FieldValue.serverTimestamp(),
-      });
-
-      alert("Files uploaded successfully!");
-    } catch (err) {
-      alert("Upload failed");
-      console.error("File upload error: ", err);
-    }
-  };
   return (
-    <SafeAreaView style={styles.screen}>
-      <Text style={globalStaticStyles.SubHeading}>{assessment.title}</Text>
-      <Text style={styles.dueText}>Due Date: {ConvertDate(dateOpen)}</Text>
+    <ScrollView style={{ flex: 1 }}>
+      <View style={styles.headerContainer}>
+        <H2 variant="light">{assessment.title}</H2>
+        <SubHeading variant="light">
+          Due Date: {ConvertDate(new Date(assessment.open))}
+        </SubHeading>
+      </View>
+      <HighlightedHeading>Submission Instructions</HighlightedHeading>
+      <Text style={styles.instructionsText}>{assessment.submitInstructions}</Text>
 
-      <SubmitBoxButton
-        pickResults={pickResults}
-        onPickDocuments={onPickDocuments}
+      <HighlightedHeading>Assessment Files</HighlightedHeading>
+      <View style={styles.filesList}>
+        {assessment.files && assessment.files.length > 0 ? (
+          assessment.files.map((file) => {
+            return <FileItem file={file} />;
+          })
+        ) : (
+          <BodyText style={{ textTransform: "uppercase" }}>No files</BodyText>
+        )}
+      </View>
+      <HighlightedHeading
+        containerStyle={[
+          { paddingVertical: 15 },
+          submission && { backgroundColor: MyTheme.colors.success },
+        ]}
+        renderRight={
+          submission ? (
+            Icons.check_white
+          ) : (
+            <TouchableOpacity onPress={onPickDocuments}>
+              {SquareIcon.upload(MyTheme.colors.secondary)}
+            </TouchableOpacity>
+          )
+        }
+      >
+        Your submission
+      </HighlightedHeading>
+      {/* <SubmitBoxButton pickResults={pickResults} onPickDocuments={onPickDocuments} /> */}
+      <FlatList
+        data={pickResults}
+        renderItem={({ item }) => {
+          return <FileItem file={{ name: item.name, url: item.uri, type: item.type }} />;
+        }}
+        keyExtractor={(item) => item.uri}
       />
 
-      <Text style={globalStaticStyles.SubHeading}>Submission Instructions</Text>
-      <Text style={styles.instructionsText}>
-        {assessment.submitInstructions}
-      </Text>
-
-      <Pressable onPress={OnPressSubmit} style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Submit</Text>
-      </Pressable>
-    </SafeAreaView>
+      {!submission && pickResults.length > 0 && (
+        <TouchableOpacity
+          onPress={OnPressSubmit}
+          style={styles.submitButton}
+          disabled={loading}
+        >
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
+      )}
+      {submission && (
+        <View>
+          <HighlightedHeading>Grade</HighlightedHeading>
+          <BodyText style={styles.sectionContainer}>
+            {submission.grade ?? "Ungraded"}
+          </BodyText>
+          <HighlightedHeading>Feedback</HighlightedHeading>
+          <View style={styles.sectionContainer}>
+            <TextBox>
+              <BodyText>{submission.feedback ?? ""}</BodyText>
+            </TextBox>
+            {submission.feedbackUrl && <FileItem file={submission.feedbackUrl} />}
+          </View>
+        </View>
+      )}
+    </ScrollView>
   );
 };
 
@@ -130,6 +135,27 @@ const styles = StyleSheet.create({
   screen: {
     padding: 15,
     gap: 20,
+  },
+  headerContainer: {
+    backgroundColor: MyTheme.colors.backgroundDark,
+    padding: 15,
+    gap: 10,
+  },
+  filesList: {
+    padding: 10,
+  },
+  sectionContainer: {
+    padding: 15,
+    gap: 10,
+  },
+  subHeading: {
+    backgroundColor: MyTheme.colors.primary_300,
+    padding: 10,
+  },
+  submissionHeading: {
+    backgroundColor: MyTheme.colors.primary_300,
+    padding: 10,
+    paddingVertical: 18,
   },
   submitButton: {
     backgroundColor: MyTheme.colors.secondary,
@@ -144,11 +170,9 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: "white",
   },
-  dueText: {
-    color: "#585858",
-    fontSize: 13,
-  },
+
   instructionsText: {
     fontWeight: "300",
+    padding: 10,
   },
 });

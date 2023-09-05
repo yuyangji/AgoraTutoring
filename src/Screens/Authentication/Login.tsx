@@ -15,7 +15,7 @@ import { CTAButton } from "../../Components/CTAButton/CTAButton";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import RoundTextField from "../../Components/RoundTextField";
 import { MaterialIcons } from '@expo/vector-icons';
-import { loginUser } from "../../Firebase/AuthenticationApi";
+import { loginUser } from "../../Database/Firebase/AuthenticationApi";
 
 const lockIcon = <MaterialIcons name="lock-outline" size={24} color="black" />
 const emailIcon = <MaterialIcons name="mail-outline" size={24} color="black" />

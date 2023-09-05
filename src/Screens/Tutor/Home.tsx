@@ -1,23 +1,18 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 import AnnouncementCard from "../../Components/AnnouncementCard";
-import useGlobalStyles, {
-  MyTheme,
-  globalStaticStyles,
-} from "../../useGlobalStyles";
+import useGlobalStyles, { MyTheme, globalStyles } from "../../Styles/useGlobalStyles";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
-import { useEffect } from "react";
-import { AcceptEnrolmentRequest } from "../../Firebase/EnrolmentApi";
-import { getLessonsForStudent } from "../../Firebase/AttendanceApi";
-import { selectGroups } from "../../Redux/slices/programSlice";
+import { selectGroupIds, selectGroups } from "../../Redux/slices/programSlice";
 import { Lesson } from "../../Types/Lesson";
 import { logout, selectUser } from "../../Redux/slices/userSlice";
 import { selectLessons } from "../../Redux/slices/lessonSlice";
 import { ConvertDate } from "../../Utils";
 import CustomHeader from "../../Navigation/Header";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import useLessons from "../../hooks/useLesson";
 const HandWave = () => (
   <MaterialCommunityIcons name="hand-wave-outline" size={24} color="#DCAD05" />
 );
@@ -39,10 +34,23 @@ const ClassCard = ({ title, content, location, time }) => {
 };
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+
   const user = useAppSelector(selectUser);
   const groups = useAppSelector(selectGroups);
-  const lessons = useAppSelector(selectLessons);
-  const dispatch = useAppDispatch();
+  const groupIds = useAppSelector(selectGroupIds);
+  const startDate = useMemo(() => {
+    const today = new Date();
+    return today;
+  }, []);
+  const endDate = useMemo(() => {
+    const today = new Date();
+    today.setDate(today.getDate() + 7);
+    return today;
+  }, []);
+
+  const { lessons } = useLessons({ groupIds: groupIds, startDate, endDate });
+
   const getGroupName = (groupId) => {
     const index = groups.findIndex((g) => g.groupId == groupId);
     if (index != -1) return groups[index].name;
@@ -65,16 +73,12 @@ const Home = () => {
           Hello, {user.firstName} {user.lastName} <HandWave />
         </Text>
         <Text style={styles.enrolmentStatus}>
-          {user.userType == "Tutor"
-            ? "Tutor"
-            : user.programs
-            ? "Enrolled"
-            : "Unenrolled"}
+          {user.userType == "Tutor" ? "Tutor" : user.programs ? "Enrolled" : "Unenrolled"}
         </Text>
       </View>
       <View style={styles.main}>
         <View style={styles.section}>
-          <Text style={globalStaticStyles.SubHeading}>Upcoming Classes</Text>
+          <Text style={globalStyles.SubHeading}>Upcoming Classes</Text>
           <Text>You have {lessons.length} upcoming classes</Text>
 
           <ScrollView horizontal={true} style={styles.ClassCardsList}>
@@ -92,14 +96,6 @@ const Home = () => {
             })}
           </ScrollView>
         </View>
-        {/* <View style={styles.section}>
-          <Text style={globalStaticStyles.SubHeading}>Announcements</Text>
-          <AnnouncementCard
-            name="Harley Zhong"
-            date="15:00 20-08"
-            message="Classes will be cancelled today. See you next week!"
-          />
-        </View> */}
       </View>
     </View>
   );
@@ -139,6 +135,7 @@ const styles = StyleSheet.create({
 
   ClassCardsList: {
     gap: 4,
+    paddingVertical: 10,
   },
   ClassCardContainer: {
     borderRadius: 10,

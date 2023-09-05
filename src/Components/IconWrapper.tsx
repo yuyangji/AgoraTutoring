@@ -6,7 +6,7 @@ interface IconWrapperProps {
   backgroundColor: string;
 }
 
-const IconWrapper: React.FC<IconWrapperProps> = ({ children, backgroundColor }) => {
+const CircularBackground: React.FC<IconWrapperProps> = ({ children, backgroundColor }) => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {children}
@@ -24,4 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IconWrapper;
+export default CircularBackground;

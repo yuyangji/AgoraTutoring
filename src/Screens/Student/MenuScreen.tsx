@@ -5,9 +5,9 @@ import CustomHeader from "../../Navigation/Header";
 import {
   selectGroups,
   selectProgramById,
-  selectPrograms,
+  selectProgramIds,
 } from "../../Redux/slices/programSlice";
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StudentRootStackParamList } from "../../Navigation/Student/StudentNavigator";
@@ -72,7 +72,7 @@ const accordionStyles = StyleSheet.create({
 
 const MenuScreen = () => {
   const user = useAppSelector(selectUser);
-  const programs = useAppSelector(selectPrograms);
+  const programs = useAppSelector(selectProgramIds);
   const groups = useAppSelector(selectGroups);
   const programObjects = useAppSelector(selectProgramById);
 

@@ -5,7 +5,7 @@
 
 //Student enrol into program
 
-import { AcceptEnrolmentRequest } from "../src/Firebase/EnrolmentApi";
+import { AcceptEnrolmentRequest } from "../src/Database/Firebase/EnrolmentApi";
 
 //Tutor accepts enrolment into program
 

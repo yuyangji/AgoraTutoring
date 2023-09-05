@@ -4,15 +4,16 @@ import CourseCard, { CourseCardProps } from "./ProgramCard";
 import { useAppDispatch, useAppSelector } from "../../../Redux/hooks";
 import {
   enrolInProgram,
-  selectPrograms,
+  selectProgramIds,
 } from "../../../Redux/slices/programSlice";
-import { globalStaticStyles } from "../../../useGlobalStyles";
+import { globalStyles } from "../../../Styles/useGlobalStyles";
 import SearchField from "../../../Components/SearchBar";
-import { getAllPrograms } from "../../../Firebase/Firebase";
+import { getAllPrograms } from "../../../Database/Firebase/Firebase";
 import ConfirmationModal from "./ConfirmationModal";
 import { Program } from "../../../Types/Program";
 import { selectUser } from "../../../Redux/slices/userSlice";
-import { getStudentEnrolmentRequests } from "../../../Firebase/EnrolmentApi";
+import { getStudentEnrolmentRequests } from "../../../Database/Firebase/EnrolmentApi";
+import { SafeScreen } from "../../../Styles/Layout";
 
 // const dummyData: Omit<CourseCardProps, "onPressEnrol" | "admin">[] = [
 //   {
@@ -44,7 +45,7 @@ const ProgramSearch = () => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useAppDispatch();
-  const myPrograms = useAppSelector(selectPrograms);
+  const myPrograms = useAppSelector(selectProgramIds);
   const user = useAppSelector(selectUser);
 
   const onPressEnrolbtn = (programID: string) => {
@@ -84,7 +85,7 @@ const ProgramSearch = () => {
   }, []);
 
   return (
-    <View style={globalStaticStyles.screen}>
+    <SafeScreen >
       <SearchField additionalStyles={{ marginBottom: 14 }} />
       <FlatList
         data={allPrograms}
@@ -109,7 +110,7 @@ const ProgramSearch = () => {
         loading={loading}
         onConfirmEnrol={onPressConfirmEnrolment}
       />
-    </View>
+    </SafeScreen>
   );
 };
 

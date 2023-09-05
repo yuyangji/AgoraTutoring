@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Assessment } from "../../Types/Assessment";
-import { fetchAssessmentsDb } from "../../Firebase/AssessmentsApi";
+import { fetchAssessmentsDb } from "../../Database/Firebase/AssessmentsApi";
 import { Group } from "../../Types/Group";
 import { RootState } from "../store";
 
 interface AssessmentsSliceState {
   entities: Assessment[],
+  ids: string[],
   byId: Record<string, Assessment>,
   error: string | null,
   
@@ -13,6 +14,7 @@ interface AssessmentsSliceState {
 
 let initialState: AssessmentsSliceState = {
   byId: {},
+  ids: [],
     entities: [],
     error: null
 }
@@ -48,6 +50,7 @@ export const assessmentsSlice = createSlice({
         // Handle the fulfilled action here
         state.entities = action.payload;
         state.byId = action.payload.reduce((acc, assessment) => { acc[assessment.assessmentId] = assessment; return acc }, {})
+        state.ids = action.payload.map(assessment => assessment.assessmentId);
       });
       builder.addCase(fetchAssessments.rejected, (state, action) => {
         // Handle the rejected action here, e.g., storing the error
@@ -55,7 +58,8 @@ export const assessmentsSlice = createSlice({
       });
     },
   });
-  
+
+export const selectAssessmentIds = (state: RootState) => state.assessments.ids
 export const selectAssessments = (state: RootState) => state.assessments.entities
 export const assessmentDict = (state: RootState) => state.assessments.byId
 export default assessmentsSlice.reducer;

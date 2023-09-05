@@ -1,5 +1,5 @@
 import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore"
-import { Student, Tutor } from "./Users"
+import {  ShallowUser, Tutor } from "./Users"
 
 
 export class Group {
@@ -7,16 +7,17 @@ export class Group {
         public groupId:string,
         public programId: string,
         public name: string,
-        public students: Student[],
-        public tutors:  Tutor[]
+        public students: {id:string, name:string}[],
+        public tutors: string[],
     ) { }
 }
 
 export type GroupDb = {
      programId: string,
      name: string,
-     students: Student[],
-     tutors:  Tutor[]
+     students: {id:string, name:string}[],
+    tutors: string[],
+
 }
 
 
@@ -32,6 +33,7 @@ export const GroupConverter = {
         return {
             ...data,
             groupId: snapshot.id,
+          
         }
     }
 }

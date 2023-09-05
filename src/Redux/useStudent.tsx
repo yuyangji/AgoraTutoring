@@ -8,9 +8,8 @@ import {
   fetchGroups,
   fetchProgramData,
   selectGroups,
-  setProgram,
 } from "./slices/programSlice";
-import { GroupsRef, ProgramsCol } from "../Firebase/Firebase";
+import { GroupsByProgramId, ProgramsDb } from "../Database/Firebase/Firebase";
 import { ProgramConverter } from "../Types/Program";
 import { fetchAssessments } from "./slices/assessmentsSlice";
 
@@ -20,44 +19,27 @@ const useStudent = () => {
   const groups = useAppSelector(selectGroups)
   const dispatch = useAppDispatch();
 
-  const fetchUserData = async () => {
-    try {
-      await dispatch(fetchProgramData(user.programs))
-      await dispatch(fetchGroups(user.programs))
-  
-      if(groups.length > 0)
-        await dispatch(fetchAssessments(groups))
-    } catch (error) {
-      
+  useEffect(() => {
+    if (groups.length > 0) {
+      try {
+   
+        dispatch(fetchAssessments(groups));
+      } catch (e) {
+        console.error(e);
+      }
     }
-
-  }
+  }, [groups]);
 
   useEffect(() => {
-    if (user && user.programs.length > 0) {
-      const promise = fetchUserData()
-
-      //setup listeners for program changes
-      // const programUnsubscribe = user.programs.map((programId) =>
-      //   ProgramsCol.doc(programId).onSnapshot((doc) => {
-      //     const program = ProgramConverter.fromFirestore(doc);
-      //     dispatch(setProgram(program));
-      //   })
-      // );
-
-      // Set up listeners for group changes
-      //   const groupUnsubscribes = user.programs.map((programId) =>
-      //   GroupsRef(programId)
-      //     .where("students", "array-contains", user.id)
-      //     .onSnapshot((querySnapshot) => {
-      //       const groups = querySnapshot.docs.map((doc) => doc.data());
-      //       dispatch(updateGroups(groups));
-      //     })
-      // );
-
-
+    if (user) {
+      try {
+        dispatch(fetchProgramData(user.programs.map(p => p.programId)));
+        dispatch(fetchGroups(user.programs.filter(p => p.groupId != null).map(p => p.groupId)));
+      } catch (e) {
+        console.error(e);
+      }
     }
-  }, [user, dispatch]);
+  }, [user]);
 };
 
 export default useStudent;

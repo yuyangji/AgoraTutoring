@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import HeaderMenu from "./HeaderMenu";
-import { MyTheme } from "../useGlobalStyles";
+import { MyTheme } from "../Styles/useGlobalStyles";
 import { IconNotifications } from "./BottomTabIcons";
 
 const CustomHeader = ({ title, onLogout }) => {

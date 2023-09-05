@@ -1,9 +1,10 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StudentAppNavigator } from "./StudentApp";
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 import Submit from "../../Screens/Student/Assessments/Submit";
 import ProgramSearch from "../../Screens/Student/BrowsePrograms/ProgramSearch";
+import useStudent from "../../Redux/useStudent";
 
 //To do navigation types.
 export type StudentRootStackParamList = {
@@ -18,6 +19,8 @@ export default function StudentStack() {
   const screenOptions = {
     headerShown: false,
   };
+
+  useStudent();
 
   return (
     <NavigationContainer theme={MyTheme}>

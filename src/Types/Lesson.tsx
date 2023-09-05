@@ -1,16 +1,17 @@
 import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import { Group } from "./Group";
 import { Tutor } from "./Users";
-
+import firestore from '@react-native-firebase/firestore'
 export class Lesson {
   constructor(
-    public lessonId: string,
-    public tutors: Tutor[],
+
+    public tutors: string[],
     public instructions: string,
     public location: string,
     public start: string,
     public end: string,
     public attendance: string[],
+    public lessonId?: string,
     public groupId?: string //Can fill this in after. since to get lesson, you need groupid.
   ) {}
 
@@ -24,20 +25,24 @@ export type LessonDbModel = {
   location: string;
   start: FirebaseFirestoreTypes.Timestamp;
   end: FirebaseFirestoreTypes.Timestamp;
-  tutors: Tutor[];
+  tutors: string[];
 
   attendance: string[];
 };
 
 export const LessonConverter = {
   toFirestore: (lesson: Lesson): LessonDbModel => {
+
+    const startDate = new Date(lesson.start)
+    const endDate = new Date(lesson.end)
+    
+    console.log(startDate, endDate)
     return {
-      start: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(lesson.start)),
-      end: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(lesson.end)),
+      start: firestore.Timestamp.fromDate(startDate),
+      end:  firestore.Timestamp.fromDate(endDate),
       instructions: lesson.instructions,
       location: lesson.location,
       tutors: lesson.tutors,
-
       attendance: lesson.attendance,
     };
   },

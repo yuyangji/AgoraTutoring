@@ -3,8 +3,8 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { User } from '../Types/Users';
 
 import { useAppDispatch, useAppSelector } from '../Redux/hooks';
-import { fetchUserById, logout, selectUser, updateUser } from '../Redux/slices/userSlice';
-import { UsersRef } from '../Firebase/Firebase';
+import { fetchUserById, logout, selectUser } from '../Redux/slices/userSlice';
+import { UsersDb } from '../Database/Firebase/Firebase';
 
 
 //Controls the updating and setting of user data based on auth state.

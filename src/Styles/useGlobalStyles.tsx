@@ -7,7 +7,7 @@ export const MyTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#134784',
-    primaryLight: '#0C3567',
+    primary_300: '#0C3567',
     textPrimary: '#0C437A',
     backgroundDark: '#0A2342',
     surfaceDark: '#0C3260',
@@ -15,16 +15,14 @@ export const MyTheme = {
     emergency: '#ED4E4E',
     success:'#29B136'
   },
-
 }
-export const globalStaticStyles = StyleSheet.create({
-  screen: {
-    flexDirection: 'column',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    backgroundColor: 'FDFDFD',
-    flex: 1
-  },
+
+export const GlobalValues = {
+  screenPaddingHorizontal: 18,
+  screenPaddingVertical: 20,
+}
+
+export const globalStyles = StyleSheet.create({
   boxShadow: {
     shadowColor: "#000",
     backgroundColor: 'transparent',
@@ -48,6 +46,16 @@ export const globalStaticStyles = StyleSheet.create({
   },
   text_md: {
     fontSize: 15,
+    color: MyTheme.colors.textPrimary
+  },
+  text_md_bold: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: MyTheme.colors.textPrimary
+  },
+
+  text_sm: {
+    fontSize: 12,
     color: MyTheme.colors.textPrimary
   }
 

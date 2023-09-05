@@ -1,9 +1,9 @@
-import { Enrolment, EnrolmentRequest, User } from "../Types/Users";
+import { Enrolment, EnrolmentRequest, User } from "../../Types/Users";
 import functions from "@react-native-firebase/functions";
 import firestore from "@react-native-firebase/firestore";
 import { FirestoreResult } from "./Types";
-import { EnrolmentsCol, ProgramsCol } from "./Firebase";
-import { Program, ProgramConverter } from "../Types/Program";
+import { EnrolmentsDb, ProgramsDb } from "./Firebase";
+import { Program, ProgramConverter } from "../../Types/Program";
 
 type AcceptEnrollmentParams = {
   studentId: string;
@@ -38,7 +38,7 @@ export const getProgramData = async (programIds: string[]) => {
   try {
     // Retrieve the full course details
     const docs = await Promise.all(
-      programIds.map((id) => ProgramsCol.doc(id).get())
+      programIds.map((id) => ProgramsDb.doc(id).get())
     );
     return docs.map((doc) => ProgramConverter.fromFirestore(doc));
   } catch (error) {
@@ -50,7 +50,7 @@ export const getProgramData = async (programIds: string[]) => {
 //Get courses the student is enrolled in
 export const getEnrolledPrograms = async (studentID: string) => {
   try {
-    const querySnapshot = await EnrolmentsCol.where(
+    const querySnapshot = await EnrolmentsDb.where(
       "studentID",
       "==",
       studentID
@@ -167,16 +167,3 @@ export const sendEnrolmentRequest = async (
   }
 };
 
-//Mark attendance for a student for a lesson.
-export const markAttendance = async (lessonID: string, studentID: string) => {
-  try {
-    await firestore().collection("Attendance").add({
-      lessonID,
-      studentID,
-    });
-    return { success: true };
-  } catch (error) {
-    console.error("Error marking attendance:", error);
-    return { success: false, error };
-  }
-};

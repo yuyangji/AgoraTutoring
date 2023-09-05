@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, FlatList } from "react-native";
-import { MyTheme, globalStaticStyles } from "../../../useGlobalStyles";
+import { MyTheme, globalStyles } from "../../../Styles/useGlobalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 
@@ -24,7 +24,7 @@ const People = ({ tutors, students }: { tutors: string[], students:StudentListIt
     return (
       <View style={styles.peopleContainer}>
         <View style={styles.section}>
-          <Text style={globalStaticStyles.Heading}>
+          <Text style={globalStyles.Heading}>
             <FontAwesome5
               name="chalkboard-teacher"
               size={24}
@@ -33,13 +33,13 @@ const People = ({ tutors, students }: { tutors: string[], students:StudentListIt
             {tutors.length} Tutor
           </Text>
           {
-            tutors.map( (name, index) =>   <Text style={globalStaticStyles.text_md}>{name}</Text>)
+            tutors.map( (name, index) =>   <Text style={globalStyles.text_md}>{name}</Text>)
           }
         
         </View>
   
         <View style={styles.section}>
-          <Text style={{ ...globalStaticStyles.Heading, marginBottom: 10 }}>
+          <Text style={{ ...globalStyles.Heading, marginBottom: 10 }}>
             <Ionicons name="person" size={24} color={MyTheme.colors.primary} /> 23
             Students
           </Text>

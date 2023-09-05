@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { MyTheme } from '../useGlobalStyles';
+import { MyTheme } from '../Styles/useGlobalStyles';
 
 
 const RoundTextField = ({ isPassword = false, icon, placeholder, onChangeText, inputMode = null, style = null }) => {

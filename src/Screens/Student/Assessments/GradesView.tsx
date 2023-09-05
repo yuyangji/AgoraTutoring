@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, FlatList } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import DropDownPicker from "react-native-dropdown-picker";
-import { globalStaticStyles } from "../../../useGlobalStyles";
+import { globalStyles } from "../../../Styles/useGlobalStyles";
 import { useAppSelector } from "../../../Redux/hooks";
 import { selectSubmissions } from "../../../Redux/slices/submissionsSlice";
 import { Submission } from "../../../Types/Submission";
@@ -46,7 +46,7 @@ const GradesSubView = ({ data } :GradesSubViewProps) => {
         }}
       />
 
-      <Text style={globalStaticStyles.SubHeading}>Grades</Text>
+      <Text style={globalStyles.SubHeading}>Grades</Text>
 
       <View
         style={{

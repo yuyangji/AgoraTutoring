@@ -1,5 +1,5 @@
 import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-
+import firestore from '@react-native-firebase/firestore'
 
 export class Program {
   
@@ -7,11 +7,10 @@ export class Program {
     public programId: string,
     public admin: string,
     public title: string,
-    public products: string[],
+    public description:string,
     public tutors: string[],
     public start: string,
     public end: string,
-    public price?: number,
     public rate?: string,
     public subtitle?: string,
 
@@ -23,11 +22,10 @@ export type ProgramDb = {
    programId: string,
    admin: string,
    title: string,
-   products: string[],
    tutors: string[],
-   price?: number,
    rate?: string,
-   subtitle?: string,
+  subtitle?: string,
+   description:string,
   start: FirebaseFirestoreTypes.Timestamp;
   end: FirebaseFirestoreTypes.Timestamp;
 }
@@ -36,8 +34,8 @@ export const ProgramConverter = {
   toFirestore: (programDb: Program): ProgramDb => {
     return {
       ...programDb,
-      start: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(programDb.start)),
-      end: FirebaseFirestoreTypes.Timestamp.fromDate(new Date(programDb.end)),
+      start: firestore.Timestamp.fromDate(new Date(programDb.start)),
+      end: firestore.Timestamp.fromDate(new Date(programDb.end)),
     };
   },
   fromFirestore: (snapshot:FirebaseFirestoreTypes.DocumentSnapshot<FirebaseFirestoreTypes.DocumentData>): Program => {

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 
 import { TouchableOpacity, Text, StyleSheet, StyleProp, ViewStyle } from "react-native";
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 
 type ButtonType = "primary" | "secondary";
 

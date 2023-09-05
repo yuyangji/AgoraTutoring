@@ -7,7 +7,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
 } from "react-native";
-import { MyTheme } from "../../../useGlobalStyles";
+import { MyTheme } from "../../../Styles/useGlobalStyles";
 
 const ConfirmationModal = ({
   showModal,

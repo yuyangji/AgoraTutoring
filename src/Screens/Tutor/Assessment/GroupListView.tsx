@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import SearchField from "../../../Components/SearchBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { MyTheme } from "../../../useGlobalStyles";
+import { MyTheme } from "../../../Styles/useGlobalStyles";
 import AssessmentView from "./AssessmentView";
 import { NativeStackNavigationProp, createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
@@ -84,26 +84,26 @@ const GroupListView = () => {
     navigation.push("Lesson")
   };
 
-  return isShowing ? (
-    <AssessmentView setIsShowing={setIsShowing} />
-  ) : (
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <SearchField additionalStyles={{ flex: 1, borderRadius: 8 }} />
-        <Pressable style={{ ...styles.addBtn }}>
-          <Text style={{ color: "white" }}>+ Add</Text>
-        </Pressable>
-      </View>
-      <FlatList
-        style={styles.listContainer}
-        data={assessments}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <GroupListItem onPress={OnPressItem} group={item} />
-        )}
-      />
-    </View>
-  );
+  // return isShowing ? (
+  //   <AssessmentView setIsShowing={setIsShowing} />
+  // ) : (
+  //   <View style={styles.container}>
+  //     <View style={styles.topContainer}>
+  //       <SearchField additionalStyles={{ flex: 1, borderRadius: 8 }} />
+  //       <Pressable style={{ ...styles.addBtn }}>
+  //         <Text style={{ color: "white" }}>+ Add</Text>
+  //       </Pressable>
+  //     </View>
+  //     <FlatList
+  //       style={styles.listContainer}
+  //       data={assessments}
+  //       keyExtractor={(item, index) => index.toString()}
+  //       renderItem={({ item }) => (
+  //         <GroupListItem onPress={OnPressItem} group={item} />
+  //       )}
+  //     />
+  //   </View>
+  // );
 };
 
 export default GroupListView;

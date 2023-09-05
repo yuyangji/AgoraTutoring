@@ -1,10 +1,10 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Assessments from "../../Screens/Student/Assessments/Assessments";
-import { MyTheme } from "../../useGlobalStyles";
-import AssessmentsView from "../../Screens/Tutor/Program/AssessmentList";
+import { MyTheme } from "../../Styles/useGlobalStyles";
+import AssessmentsList from "../../Screens/Tutor/Assessment/AssessmentList";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Admin from "../../Screens/Tutor/Administration/Root";
-import GroupListView from "../../Screens/Tutor/Program/GroupListView";
+import GroupListView from "../../Screens/Tutor/Assessment/GroupListView";
 import { TutorRootStackParamList } from "./NavigatorTypes";
 
 

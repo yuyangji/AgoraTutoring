@@ -1,22 +1,19 @@
 import React from "react";
 import { View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import Home from "../../Screens/Tutor/Home";
-import Attendance from "../../Screens/Student/Attendence";
 import { useTheme } from "@react-navigation/native";
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BottomTabBar from "../../Components/Navigation/BottomTabBar";
 import HeaderMenu from "../../Navigation/HeaderMenu";
 import { useAppDispatch } from "../../Redux/hooks";
 import GroupChat from "../../Screens/Shared/GroupChat";
-
-import { IconAssessments, IconCalendar, IconChat, IconHome, IconMenu, IconNotifications, IconProfile } from "../BottomTabIcons";
+import { IconAssessments, IconCalendar, IconChat, IconHome, IconMenu} from "../BottomTabIcons";
 import { logout } from "../../Redux/slices/userSlice";
-import AssessmentView from "../../Screens/Tutor/Program/AssessmentView";
-import AssessmentsView from "../../Screens/Tutor/Program/AssessmentList";
+import AssessmentsList from "../../Screens/Tutor/Assessment/AssessmentList";
 import MenuScreen from "../../Screens/Student/MenuScreen";
+import TutorCalendar from "../../Screens/Tutor/TutorCalendar";
 
 
 const BottomTab = createBottomTabNavigator();
@@ -65,7 +62,7 @@ export const TutorApp = () => {
       />
       <BottomTab.Screen
         name="Calendar"
-        component={Attendance}
+        component={TutorCalendar}
         options={{
           tabBarIcon: IconCalendar,
         }}
@@ -80,7 +77,7 @@ export const TutorApp = () => {
 
       <BottomTab.Screen
         name="Assess"
-        component={AssessmentsView}
+        component={AssessmentsList}
         options={{
           tabBarIcon: IconAssessments,
         }}

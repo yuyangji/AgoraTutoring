@@ -16,7 +16,7 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import db from '@react-native-firebase/firestore'
 import RoundTextField from "../../Components/RoundTextField";
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 import { User } from "../../Types/Users";
 import { useAppDispatch } from "../../Redux/hooks";
 import { createUserEmailAndPassword } from "../../Redux/slices/userSlice";

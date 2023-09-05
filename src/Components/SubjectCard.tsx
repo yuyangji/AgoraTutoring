@@ -1,6 +1,6 @@
 
 import { View, StyleSheet, TouchableOpacity, Text} from "react-native"
-import { MyTheme, globalStaticStyles } from "../useGlobalStyles"
+import { MyTheme, globalStyles } from "../Styles/useGlobalStyles"
 import { ConvertDate } from "../Utils";
 
 export type SubjectCardProps = {
@@ -14,7 +14,7 @@ export type SubjectCardProps = {
 const SubjectCard = ({ data, onPress }: { data: SubjectCardProps, onPress: () => void }) => {
     
     return (
-        <TouchableOpacity style={{...globalStaticStyles.boxShadow, borderRadius: 5}} onPress = {onPress}>
+        <TouchableOpacity style={{...globalStyles.boxShadow, borderRadius: 5}} onPress = {onPress}>
             <View style={styles.cardContainer}>
                 <View style={styles.leftContainer}>
                     <View style={{ flexDirection: 'column', gap: 4 }}>

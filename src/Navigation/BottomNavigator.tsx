@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MyTheme } from "../useGlobalStyles";
+import { MyTheme } from "../Styles/useGlobalStyles";
 import BottomTabBar from "../Components/Navigation/BottomTabBar";
 import { useAppDispatch } from "../Redux/hooks";
 import HeaderMenu from "./HeaderMenu";

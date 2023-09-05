@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,50 +10,16 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { MyTheme, globalStaticStyles } from "../../../useGlobalStyles";
+import { MyTheme, globalStyles } from "../../../Styles/useGlobalStyles";
 import { StudentRootStackParamList } from "../../../Navigation/Student/StudentNavigator";
 import { useAppDispatch, useAppSelector } from "../../../Redux/hooks";
-import {
-  fetchSubmissions,
-  selectSubmissionByAssessmentDict,
-  selectSubmissions,
-} from "../../../Redux/slices/submissionsSlice";
-import { selectAssessments } from "../../../Redux/slices/assessmentsSlice";
+
+import { selectAssessmentIds, selectAssessments } from "../../../Redux/slices/assessmentsSlice";
 import { Assessment } from "../../../Types/Assessment";
 import { ConvertDate, getTimeLeft } from "../../../Utils";
+import { selectUser } from "../../../Redux/slices/userSlice";
+import { useSubmissions } from "../../../hooks/useSubmission";
 
-export interface Submission {
-  submissionId: String;
-  submissionTitle: String;
-  submissionDueDate: String;
-  submissionInstructions: String;
-  isSubmitted: boolean;
-}
-
-// const submissions: Submission[] = [
-//     {
-//         submissionId: '1',
-//         submissionTitle: 'English Language Essay 1',
-//         submissionDueDate: '2023-03-24T10:00:00Z',
-//         submissionInstructions: "",
-//         isSubmitted: false,
-//     },
-//     {
-//         submissionId: '2',
-//         submissionTitle: 'Math Assignment 1',
-//         submissionDueDate: '2023-03-25T10:00:00Z',
-//         submissionInstructions: "",
-//         isSubmitted: true,
-//     },
-//     {
-//         submissionId: '3',
-//         submissionTitle: 'History Report 1',
-//         submissionDueDate: '2023-03-26T10:00:00Z',
-//         submissionInstructions: "",
-//         isSubmitted: false,
-//     },
-//     // Add more submissions as needed
-// ];
 
 const SubmissionButton = ({
   assessment,
@@ -65,48 +31,35 @@ const SubmissionButton = ({
   const dateOpen = new Date(assessment.open);
   const dateClose = new Date(assessment.close);
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={styles.SubmissionButtonContainer}
-    >
-      <Text style={[styles.buttonText, styles.buttonTextTitle]}>
-        {assessment.title}
-      </Text>
+    <TouchableOpacity onPress={onPress} style={styles.SubmissionButtonContainer}>
+      <Text style={[styles.buttonText, styles.buttonTextTitle]}>{assessment.title}</Text>
 
       <Text style={styles.buttonText}>Due on {ConvertDate(dateClose)}</Text>
 
       <Text style={[styles.buttonText, styles.buttonTextRemainingTime]}>
         {getTimeLeft(dateClose)}
       </Text>
-      <Ionicons
-        style={styles.arrowIcon}
-        name="chevron-forward"
-        size={24}
-        color="white"
-      />
+      <Ionicons style={styles.arrowIcon} name="chevron-forward" size={24} color="white" />
     </TouchableOpacity>
   );
 };
 
 const SubmissionsSubView = () => {
-  const [pendingAssessments, setPendingAssessments] = useState<Assessment[]>(
-    []
-  );
-  const [previousSubmissions, setPreviousSubmissions] = useState([]);
+  const [pendingAssessments, setPendingAssessments] = useState<Assessment[]>([]);
 
-  const submissions = useAppSelector(selectSubmissions);
   const assessments = useAppSelector(selectAssessments);
-  const submissionByAssessmentID = useAppSelector(
-    selectSubmissionByAssessmentDict
-  );
+  const assessmentIds = useAppSelector(selectAssessmentIds)
+
+  const { submissions } = useSubmissions(assessmentIds);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<StudentRootStackParamList>>();
 
   useEffect(() => {
-    if (assessments) {
+    if (assessments && submissions) {
       const pendingResults = assessments.filter(
-        (assessment) => !submissionByAssessmentID[assessment.assessmentId]
+        (assessment) =>
+          !submissions.some((s) => s.assessmentId == assessment.assessmentId)
       );
       setPendingAssessments(pendingResults);
     }
@@ -114,31 +67,19 @@ const SubmissionsSubView = () => {
 
   //On press the submission button
   const onPressButton = (assessmentId: string) => {
-    if (assessmentId in submissionByAssessmentID) {
-      const submissionId = submissionByAssessmentID[assessmentId].submissionId;
-      console.log("Pushing data", {
-        assessmentId: assessmentId,
-        submissionId: submissionId,
-      });
-      navigation.push("Submit", {
-        assessmentId: assessmentId,
-        submissionId: submissionId,
-      });
-    } else {
-      console.log("Pushing data", {
-        assessmentId: assessmentId,
-        submissionId: "",
-      });
-      navigation.push("Submit", {
-        assessmentId: assessmentId,
-        submissionId: "",
-      });
-    }
+    const submissionId = submissions.find(
+      (s) => s.assessmentId == assessmentId
+    )?.submissionId;
+
+    navigation.push("Submit", {
+      assessmentId: assessmentId,
+      submissionId: submissionId ?? "",
+    });
   };
 
   return (
     <View style={styles.SubViewContainer}>
-      <Text style={[globalStaticStyles.SubHeading, styles.SubHeading]}>
+      <Text style={[globalStyles.SubHeading, styles.SubHeading]}>
         Waiting on {pendingAssessments.length} submissions
       </Text>
       <View style={styles.SubmissionsList}>

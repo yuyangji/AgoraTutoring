@@ -8,7 +8,7 @@ import {
   ViewStyle,
 } from "react-native";
 
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 
 interface SegmentedControlProps {
   options: string[];

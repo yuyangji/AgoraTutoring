@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MyTheme } from '../../useGlobalStyles';
+import { MyTheme } from '../../Styles/useGlobalStyles';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const IconHome = (props: { color: string; size: number }) => (

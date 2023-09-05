@@ -1,13 +1,11 @@
 import firestore from "@react-native-firebase/firestore";
 import {
-  Attendance,
-  Enrolment,
-  EnrolmentRequest,
   User,
-} from "../Types/Users";
-import { Program } from "../Types/Program";
+} from "../../Types/Users";
+import { Program } from "../../Types/Program";
 import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { FirestoreResult } from "./Types";
+import { UsersDb } from "./Firebase";
 
 //Get the user's details by id stored in firestore
 export const getUserById = async (
@@ -36,22 +34,6 @@ export const loginUser = async(
 }
 
 
-export const createUserAuth = async (
-  email: string,
-  password: string
-): Promise<FirestoreResult<FirebaseAuthTypes.UserCredential>> => {
-  try {
-    // Create the user with email and password
-    const authResult = await auth().createUserWithEmailAndPassword(
-      email,
-      password
-    );
-    return { success: true, data: authResult };
-  } catch (error) {
-    console.error("Error creating user:", error);
-    return { success: false, error };
-  }
-};
 
 export const createUserWithEmailAndPassword = async (
   email: string,
@@ -86,13 +68,14 @@ export const createUserWithEmailAndPassword = async (
 
 export const createUser = async (
   user: User
-): Promise<FirestoreResult<User>> => {
+) => {
   try {
-    await firestore().collection("Users").doc(user.id).set(user);
+    console.log("creating user ", user)
+    const data = await UsersDb.doc(user.id).set(user);
     console.log("User created successfully");
-    return { success: true, data: user };
+    return data
   } catch (error) {
     console.error("Error creating user:", error);
-    return { success: false, error: error };
+    throw error;
   }
 };

@@ -5,12 +5,12 @@ import { useTheme } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Calendar, LocaleConfig } from "react-native-calendars";
-import IconWrapper from "../../Components/IconWrapper";
+import CircularBackground from "../../Components/IconWrapper";
 import { useAppSelector } from "../../Redux/hooks";
 import { selectLessons } from "../../Redux/slices/lessonSlice";
 import { selectUser } from "../../Redux/slices/userSlice";
 import { Lesson, LessonDbModel } from "../../Types/Lesson";
-import { MyTheme } from "../../useGlobalStyles";
+import { MyTheme } from "../../Styles/useGlobalStyles";
 
 const calendarIcon = (
   <Ionicons name="md-calendar-sharp" size={23} color="white" />
@@ -134,14 +134,14 @@ const Attendance = () => {
       {lesson ? (
         <View style={styles.informationSection}>
           <View style={styles.iconAndTextContainer}>
-            <IconWrapper backgroundColor="#2077D0">{calendarIcon}</IconWrapper>
+            <CircularBackground backgroundColor="#2077D0">{calendarIcon}</CircularBackground>
             <View>
               <Text style={styles.calendarDateText}>{selected}</Text>
               <Text>14:00 - 15:30</Text>
             </View>
           </View>
           <View style={styles.iconAndTextContainer}>
-            <IconWrapper backgroundColor="#00AB07">{locationIcon}</IconWrapper>
+            <CircularBackground backgroundColor="#00AB07">{locationIcon}</CircularBackground>
             <View>
               <Text>Location</Text>
               <Text style={styles.locationText}>{}</Text>

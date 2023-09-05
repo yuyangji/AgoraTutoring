@@ -6,12 +6,12 @@ import {
   FlatList,
 } from "react-native";
 import SearchField from "../../Components/SearchBar";
-import { MyTheme, globalStaticStyles } from "../../useGlobalStyles";
+import { MyTheme, globalStyles } from "../../Styles/useGlobalStyles";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useEffect, useState } from "react";
 import { Program } from "../../Types/Program";
-import { getAllPrograms} from "../../Firebase/Firebase";
+import { getAllPrograms} from "../../Database/Firebase/Firebase";
 import SubjectCard from "../../Components/SubjectCard";
 
 

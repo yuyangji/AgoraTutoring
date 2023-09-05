@@ -6,17 +6,22 @@ export interface User {
   lastName: string;
   email: string;
   userType: "Tutor" | "Student" | "Parent" | "Guest";
-  programs: string[];
+  programs: ProgramGroup[];
   avatarUrl?: string;
 }
 
-export interface Student {
-  id: string;
+export type ProgramGroup = {
+  groupId: string;
+  programId: string;
+}
+
+export interface ShallowUser {
+  userId: string;
   firstName: string;
   lastName: string;
 }
 
-export interface Tutor extends Student{
+export interface Tutor extends ShallowUser{
 
 }
 
@@ -28,13 +33,6 @@ export interface Enrolment{
   lastName: string;
   joinDate: FirebaseFirestoreTypes.Timestamp
 }
-export interface Attendance{
-  documentID: string;
-  lessonID: string;
-  studentID: string;
-}
-
-
 
 
 export interface Message {
